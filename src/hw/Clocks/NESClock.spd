@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file path="NESClock_sim/NESClock.vo" type="VERILOG" />
+ <topLevel name="NESClock" />
+ <deviceFamily name="cyclonev" />
+</simPackage>

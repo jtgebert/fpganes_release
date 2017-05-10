@@ -1,0 +1,38 @@
+# Reading C:/ProgramData/App-V/CFE345E7-B20F-4013-AB10-0350F684DC77/C3446511-EC8F-4614-85F4-05DF449D03F2/Root/modelsim_ase/tcl/vsim/pref.tcl
+# ERROR: No extended dataflow license exists
+# do fpganes_run_msim_rtl_verilog.do
+# if ![file isdirectory fpganes_iputf_libs] {
+# 	file mkdir fpganes_iputf_libs
+# }
+# 
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim ALTERA vmap 10.4d Lib Mapping Utility 2015.12 Dec 30 2015
+# vmap work rtl_work 
+# Modifying C:/ProgramData/App-V/CFE345E7-B20F-4013-AB10-0350F684DC77/C3446511-EC8F-4614-85F4-05DF449D03F2/root/modelsim_ase/win32aloem/../modelsim.ini
+# Error: The system cannot move the file to a different disk drive.
+# 
+# 
+#        Unable to replace existing ini file (C:/ProgramData/App-V/CFE345E7-B20F-4013-AB10-0350F684DC77/C3446511-EC8F-4614-85F4-05DF449D03F2/root/modelsim_ase/win32aloem/../modelsim.ini).  File can not be renamed.
+# 
+###### Libraries for IPUTF cores 
+###### End libraries for IPUTF cores 
+###### MIF file copy and HDL compilation commands for IPUTF cores 
+# 
+# 
+# vlog "I:/554/CPU/fpganes/src/hw/Clocks/NESClock_sim/NESClock.vo"
+# Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+# Start time: 21:57:48 on Apr 13,2017
+# vlog -reportprogress 300 I:/554/CPU/fpganes/src/hw/Clocks/NESClock_sim/NESClock.vo 
+# ** Error: (vlog-66) Execution of vlib.exe failed. Please check the error log for more details.
+# 
+# End time: 21:57:48 on Apr 13,2017, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 0
+# ** Error: C:/ProgramData/App-V/CFE345E7-B20F-4013-AB10-0350F684DC77/C3446511-EC8F-4614-85F4-05DF449D03F2/root/modelsim_ase/win32aloem/vlog failed.
+# Error in macro ./fpganes_run_msim_rtl_verilog.do line 17
+# C:/ProgramData/App-V/CFE345E7-B20F-4013-AB10-0350F684DC77/C3446511-EC8F-4614-85F4-05DF449D03F2/root/modelsim_ase/win32aloem/vlog failed.
+#     while executing
+# "vlog "I:/554/CPU/fpganes/src/hw/Clocks/NESClock_sim/NESClock.vo""

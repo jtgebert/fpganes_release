@@ -1,0 +1,5 @@
+; theres no cpu start here
+
+Label_Name: RTS
+TAY
+BPL Label_Name

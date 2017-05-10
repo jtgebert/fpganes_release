@@ -1,0 +1,6 @@
+DATE = "12:53:21 April 08, 2017"
+QUARTUS_VERSION = "15.1.0"
+
+# Revisions
+
+PROJECT_REVISION = "vga_ppu_integration_test"

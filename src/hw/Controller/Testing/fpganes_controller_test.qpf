@@ -1,0 +1,6 @@
+DATE = "16:02:42 April 06, 2017"
+QUARTUS_VERSION = "15.1.0"
+
+# Revisions
+
+PROJECT_REVISION = "fpganes_controller_test"

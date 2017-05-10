@@ -1,0 +1,3 @@
+# Ignore macOS folder preferences
+
+.DS_Store

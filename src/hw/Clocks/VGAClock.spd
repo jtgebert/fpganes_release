@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file path="VGAClock_sim/VGAClock.vo" type="VERILOG" />
+ <topLevel name="VGAClock" />
+ <deviceFamily name="cyclonev" />
+</simPackage>

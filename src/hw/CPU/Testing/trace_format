@@ -1,0 +1,18 @@
+  c200394106   A:35 X:10 Y:FF S:FC P:nvubdIzc  $8000:EA        NOP
+  c200394108   A:35 X:10 Y:FF S:FC P:nvubdIzc  $8001:A2 FF     LDX #$FF
+  c200394110   A:35 X:FF Y:FF S:FC P:NvubdIzc  $8003:9A        TXS
+  c200394112   A:35 X:FF Y:FF S:FF P:NvubdIzc  $8004:A9 00     LDA #$00
+  c200394114   A:00 X:FF Y:FF S:FF P:nvubdIZc  $8006:8D 00 02  STA $0200 = #$29
+  c200394118   A:00 X:FF Y:FF S:FF P:nvubdIZc  $8009:A2 05     LDX #$05
+  c200394120   A:00 X:05 Y:FF S:FF P:nvubdIzc  $800B:4C 33 80  JMP $8033
+  c200394123   A:00 X:05 Y:FF S:FF P:nvubdIzc  $8033:D0 F4     BNE $8029
+  c200394126   A:00 X:05 Y:FF S:FF P:nvubdIzc  $8029:CA        DEX
+  c200394128   A:00 X:04 Y:FF S:FF P:nvubdIzc  $802A:CA        DEX
+  c200394130   A:00 X:03 Y:FF S:FF P:nvubdIzc  $802B:CA        DEX
+  c200394132   A:00 X:02 Y:FF S:FF P:nvubdIzc  $802C:CA        DEX
+  c200394134   A:00 X:01 Y:FF S:FF P:nvubdIzc  $802D:CA        DEX
+  c200394136   A:00 X:00 Y:FF S:FF P:nvubdIZc  $802E:F0 DE     BEQ $800E
+  c200394139   A:00 X:00 Y:FF S:FF P:nvubdIZc  $800E:A0 05     LDY #$05
+  c200394141   A:00 X:00 Y:05 S:FF P:nvubdIzc  $8010:D0 08     BNE $801A
+  c200394144   A:00 X:00 Y:05 S:FF P:nvubdIzc  $801A:88        DEY
+  c200394146   A:00 X:00 Y:04 S:FF P:nvubdIzc  $801B:88        DEY

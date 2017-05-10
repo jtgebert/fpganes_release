@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file path="CPU_CLOCK_TEST_sim/CPU_CLOCK_TEST.vo" type="VERILOG" />
+ <topLevel name="CPU_CLOCK_TEST" />
+ <deviceFamily name="cyclonev" />
+</simPackage>

@@ -1,0 +1,8 @@
+_CPU:
+
+Start:  LDX #100
+        INX
+        LDA #20
+        ADC #-121
+        BEQ Start
+        PHP
