@@ -1,5 +1,4 @@
-Controller Simulator
-====================
+# Controller Simulator #
 - - - - - - - - - - -
 
 The controller simulator can be used to interact with our FPGA via serial communcation. Using the provided USB to GPIO cable, we connected our computer(s) to specific GPIO pins on the GPIO0 header. Then, the Controller.java file uses the JSSC (Java Simple Serial Connector) library to open the serial communcation ports on our computers, which allows the computer to send bytes to the FPGA.
@@ -14,8 +13,8 @@ The GPIO-UART cables for both players will be connected to the GPIO0 header. For
 Downloading the JSSC Library:
 -----------------------------
 
-The JSSC library can be found here: (JSSC Download)[http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22jssc%22]
-The Github repository for JSSC can be found here: (JSSC Github)[https://github.com/scream3r/java-simple-serial-connector]
+The JSSC library can be found here: [JSSC Download](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22jssc%22)
+The Github repository for JSSC can be found here: [JSSC Github](https://github.com/scream3r/java-simple-serial-connector)
 
 Our project used the 2.8.0 version of JSSC from the GroupID org.scream3r. Download the .jar and place it in this directory.
 
@@ -25,9 +24,9 @@ Compiling the Program:
 
 Ensure that all .java files are in the same source directory as the Controller.java file, and navigate to this directory. To compile the Java program, you will need to include the .jar in your classpath. Use the following terminal command: 
 
-    'javac *.java -cp <path to .jar file>' 
+    `javac *.java -cp <path to .jar file>`
 
-    ie. 'javac *.java jssc-2.8.0-.jar'
+    ie. `javac *.java jssc-2.8.0-.jar`
 
 
 Running the Java Program:
@@ -53,13 +52,13 @@ You must be in the same directory as the Controller.class file to issue the foll
 
 The terminal command is slightly different depending on the operating system. Again, the JSSC library must be included in the classpath. This is the format for each operating system:
 
-    Windows: 'java -cp <path to .jar file>; Controller <options>'                   *** NOTICE THE SEMICOLON ***
+    Windows: `java -cp <path to .jar file>; Controller <options>`       *** NOTICE THE SEMICOLON ***
 
-    ie. 'java -cp jssc-2.8.0.jar; Controller -r'
+    ie. `java -cp jssc-2.8.0.jar; Controller -r`
 
-    Mac & Linux: 'java -cp <path to .jar file>: Controller <options>'               *** NOTICE THE COLON ***
+    Mac & Linux: `java -cp <path to .jar file>: Controller <options>`     *** NOTICE THE COLON ***
     
-    ie. 'java -cp jssc-2.8.0.jar: Controller -a button_press_records.txt'
+    ie. `java -cp jssc-2.8.0.jar: Controller -a button_press_records.txt`
 
 
 Controlling the Java Program:
@@ -82,4 +81,4 @@ The program can be controller two ways:
 
 2) Clicking buttons on the GUI. Use your mouse to click the buttons. Please note that when you click a button there is a bug that will cause the program to stop recieving key button presses. To fix this, either spam the tab key until the buttons start responding to keys, or restart the program.
 
-Author: Jonathan Ebert
+*Author:* [Jonathan Ebert](https://github.com/jtgebert)
