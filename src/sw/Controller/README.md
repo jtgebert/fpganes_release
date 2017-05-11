@@ -1,5 +1,5 @@
+<!-- PLEASE OPEN THIS DOCUMENT IN GITHUB, it has been marked up for github and might be confusing when viewing raw format-->
 # Controller Simulator #
-- - - - - - - - - - -
 
 The controller simulator can be used to interact with our FPGA via serial communcation. Using the provided USB to GPIO cable, we connected our computer(s) to specific GPIO pins on the GPIO0 header. Then, the Controller.java file uses the JSSC (Java Simple Serial Connector) library to open the serial communcation ports on our computers, which allows the computer to send bytes to the FPGA.
 
