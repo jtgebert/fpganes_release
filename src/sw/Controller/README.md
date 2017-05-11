@@ -24,9 +24,9 @@ Compiling the Program:
 
 Ensure that all .java files are in the same source directory as the Controller.java file, and navigate to this directory. To compile the Java program, you will need to include the .jar in your classpath. Use the following terminal command: 
 
-    `javac *.java -cp <path to .jar file>`
+ `javac *.java -cp <path to .jar file>`
 
-    ie. `javac *.java jssc-2.8.0-.jar`
+ ie. `javac *.java jssc-2.8.0-.jar`
 
 
 Running the Java Program:
@@ -52,13 +52,13 @@ You must be in the same directory as the Controller.class file to issue the foll
 
 The terminal command is slightly different depending on the operating system. Again, the JSSC library must be included in the classpath. This is the format for each operating system:
 
-    Windows: `java -cp <path to .jar file>; Controller <options>`       *** NOTICE THE SEMICOLON ***
+Windows: `java -cp <path to .jar file>; Controller <options>`       *** NOTICE THE SEMICOLON ***
 
-    ie. `java -cp jssc-2.8.0.jar; Controller -r`
+ie. `java -cp jssc-2.8.0.jar; Controller -r`
 
-    Mac & Linux: `java -cp <path to .jar file>: Controller <options>`     *** NOTICE THE COLON ***
+Mac & Linux: `java -cp <path to .jar file>: Controller <options>`     *** NOTICE THE COLON ***
     
-    ie. `java -cp jssc-2.8.0.jar: Controller -a button_press_records.txt`
+ie. `java -cp jssc-2.8.0.jar: Controller -a button_press_records.txt`
 
 
 Controlling the Java Program:
