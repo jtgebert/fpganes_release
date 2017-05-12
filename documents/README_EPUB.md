@@ -87,13 +87,13 @@
 
 <span class="c41 c28"></span>
 
-   <span class="c43 c138">2. Top Level Block Diagram</span>
-    =====================================================
+   <span class="c43 c138">Top Level Block Diagram</span>
+============================================================
 
 <!-- -->
 
-   <span class="c42">3. Top level description</span>
-    ----------------------------------------------
+   <span class="c42">Top level description</span>
+----------------------------------------------------
 
 <span class="c1">Here is an overview of each module in our design. Our report has a section dedicated for each of these modules.</span>
 
@@ -108,25 +108,25 @@
 
 <!-- -->
 
-   <span class="c42">1. Data Flow Diagram</span>
-    ------------------------------------------
+   <span class="c42">Data Flow Diagram</span>
+ -----------------------------------------------
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 611.00px; height: 296.00px;"> ![](images/image3.png) </span>
 
 <span class="c26">Figure 1: System level data flow diagram</span>
 
-   <span class="c42">2. Control Flow Diagram</span>
-    ----------------------------------------------
+   <span class="c42">Control Flow Diagram</span>
+ ----------------------------------------------------
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 624.00px; height: 356.00px;"> ![](images/image2.png) </span>
 
 <span class="c26">Figure 2: System level control flow diagram.</span>
 
    <span class="c138 c43">4. CPU</span>
-    =================================
+========================================
 
 <span class="c42">CPU Registers</span>
---------------------------------------
+-----------------------------------------
 
 <span class="c1">The CPU of the NES is the MOS 6502. It is an  accumulator plus index register machine. There are five primary registers on which operations are performed: </span>
 
@@ -1500,7 +1500,7 @@
 <span class="c29"></span>
 
    <span class="c138 c43">5. Picture Processing Unit</span>
-    =====================================================
+ =============================================================
 
 <span class="c1"></span>
 
@@ -2734,7 +2734,7 @@
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 197.53px; height: 186.50px;"> ![test (1).png](images/image5.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 200.68px; height: 187.50px;"> ![test (2).png](images/image7.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 199.53px; height: 189.50px;"> ![test (3).png](images/image6.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 202.30px; height: 187.50px;"> ![test (4).png](images/image19.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 201.50px; height: 187.67px;"> ![test (5).png](images/image26.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 198.60px; height: 186.50px;"> ![test (10).png](images/image8.png) </span>
 
    <span>6. Memory Maps</span>
-    ======================================
+============================================
 
 <span class="c1">Cartridges are a Read-Only Memory that contains necessary data to run games. However, it is possible that in some cases that a cartridge holds more data than the CPU can address to. In this case, memory mapper comes into play and changes the mapping as needed so that one address can point to multiple locations in a cartridge. For our case, the end goal was to get the game Super Mario Bros. running on our FPGA. This game does not use a memory mapper, so we did not work on any memory mappers. In the future, we might add support for the other memory mapping systems so that we can play other games.</span>
 
@@ -3391,7 +3391,7 @@
 ==============================
 
    <span class="c138 c43">7. Controllers (SPART)</span>
-    =================================================
+=====================================================
 
 <span class="c1">The controller module allows users to provide input to the FPGA. We opted to create a controller simulator program instead of using an actual NES joypad. This decision was made because the NES controllers used a proprietary port and because the available USB controllers lacked specification sheets. The simulator program communicates with the FPGA using the SPART interface, which is similar to UART. Our SPART module used 8 data bits, no parity, and 1 stop bit for serial communication. All data was received automatically into an 8 bit buffer by the SPART module at 2400 baud. In addition to the SPART module, we also needed a controller driver to allow the CPU to interface with the controllers. The controllers are memory mapped to $4016 and $4017 for CPU to read.</span>
 
@@ -3731,7 +3731,7 @@
 ==============================
 
    <span class="c138 c43">8. VGA</span>
-    =================================
+========================================
 
 <span class="c1">The VGA interface consists of sending the pixel data to the screen one row at a time from left to right. In between each row it requires a special signal called horizontal sync (hsync) to be asserted at a specific time when only black pixels are being sent, called the blanking interval. This happens until the bottom of the screen is reached when another blanking interval begins where the interface is only sending black pixels, but instead of hsync being asserted the vertical sync signal is asserted. </span>
 
@@ -4219,7 +4219,7 @@
 ==============================
 
    <span class="c138 c43">9. Software</span>
-    ======================================
+=============================================
 
 <span class="c42">Controller Simulator</span>
 ---------------------------------------------
@@ -5381,7 +5381,7 @@
 <span class="c1">We also implemented Tic Tac Toe in assembly for initial integration tests. We bundled it into a NES ROM, and thus can run it on existing emulators as well as our own hardware.</span>
 
    <span class="c138 c43">10. Testing & Debug</span>
-    =============================================
+======================================================
 
 <span class="c1">Our debugging process had multiple steps</span>
 
@@ -5408,13 +5408,13 @@
 ------------------------------------------------------------------------
 
 </p>
-    <span>11. Results</span>
-    ====================
+   <span>11. Results</span>
+==============================
 
 <span class="c1">We were able to get NES working, thanks to our rigorous verification process, and onboard debug methodology. Some of the games we got working include Super Mario Bros, Galaga, Tennis, Golf, Donkey Kong, Ms Pacman, Defender II, Pinball, and Othello.  </span>
 
-     <span class="c138 c43">12. Possible Improvements</span>
-    ===================================================
+   <span class="c138 c43">12. Possible Improvements</span>
+ ===========================================================
 
 -   <span class="c1">Create a working audio processing unit</span>
 -   <span class="c1">More advanced memory mapper support</span>
@@ -5423,8 +5423,8 @@
 -   <span class="c1">HDMI</span>
 -   <span class="c1">VGA buffer instead of two RAM blocks to save space</span>
 
-     <span>13. References and Links</span>
-    =================================
+   <span>13. References and Links</span>
+ ===========================================
 
 <span class="c117">Ferguson, Scott. "PPU Tutorial." N.p., n.d. Web. &lt;</span> <span class="c117 c157"> <a href="https://www.google.com/url?q=https://opcode-defined.quora.com&amp;sa=D&amp;ust=1494576256706000&amp;usg=AFQjCNFS78o1vjYXTL61EsEMFxU5j_Gjng" class="c40">https://opcode-defined.quora.com</a> </span> <span class="c1 c117">&gt;.</span>
 
@@ -5451,7 +5451,7 @@
 
 <span class="c1"></span>
 
-     <span class="c138 c43">14. Contributions</span>
+  <span class="c138 c43">14. Contributions</span>
 =========================================================
 
 <span class="c42">Eric Sullivan</span>
