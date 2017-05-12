@@ -10,55 +10,6 @@
 
 <span id="NES.xhtml"></span>
 
-<!--span class="c148 c220">FPGA Implementation of the Nintendo Entertainment System (NES)</span>
-
-<span class="c162 c28 c148 c205">Four People Generating A Nintendo Entertainment System (FPGANES)</span>
-
-<span class="c162">Eric Sullivan, Jonathan Ebert, Patrick Yang, </span> <span class="c142">Pavan Holla</span>
-
-<span class="c142"></span>
-
-<span class="c142"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c220 c148">Final Report </span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c1"></span>
-
-<span class="c41 c92">University of Wisconsin-Madison</span>
-
-<span class="c41 c92">ECE 554</span>
-
-<span class="c41 c92">Spring 2017</span>
-
-<span class="c1"></span>
-
-<span class="c148 c160"></span>
-
-<span class="c138 c43"></span>
-==============================-->
-
-------------------------------------------------------------------------
-
 <span class="c138 c43"></span>
 ==============================
 
@@ -87,7 +38,7 @@
 
 <span class="c41 c28"></span>
 
-   <span class="c43 c138">Top Level Block Diagram</span>
+   <span class="c43 c138">2. Top Level Block Diagram</span>
 ============================================================
 
 <!-- -->
@@ -122,7 +73,7 @@
 
 <span class="c26">Figure 2: System level control flow diagram.</span>
 
-   <span class="c138 c43">4. CPU</span>
+   <span class="c138 c43">3. CPU</span>
 ========================================
 
 <span class="c42">CPU Registers</span>
@@ -1499,7 +1450,7 @@
 
 <span class="c29"></span>
 
-   <span class="c138 c43">5. Picture Processing Unit</span>
+   <span class="c138 c43">4. Picture Processing Unit</span>
  =============================================================
 
 <span class="c1"></span>
@@ -2733,7 +2684,7 @@
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 197.53px; height: 186.50px;"> ![test (1).png](images/image5.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 200.68px; height: 187.50px;"> ![test (2).png](images/image7.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 199.53px; height: 189.50px;"> ![test (3).png](images/image6.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 202.30px; height: 187.50px;"> ![test (4).png](images/image19.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 201.50px; height: 187.67px;"> ![test (5).png](images/image26.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 198.60px; height: 186.50px;"> ![test (10).png](images/image8.png) </span>
 
-   <span>6. Memory Maps</span>
+   <span>5. Memory Maps</span>
 ============================================
 
 <span class="c1">Cartridges are a Read-Only Memory that contains necessary data to run games. However, it is possible that in some cases that a cartridge holds more data than the CPU can address to. In this case, memory mapper comes into play and changes the mapping as needed so that one address can point to multiple locations in a cartridge. For our case, the end goal was to get the game Super Mario Bros. running on our FPGA. This game does not use a memory mapper, so we did not work on any memory mappers. In the future, we might add support for the other memory mapping systems so that we can play other games.</span>
@@ -2948,8 +2899,8 @@
 <span class="c138 c43"></span>
 ==============================
 
-1.  <span class="c138 c43">APU</span>
-    =================================
+<span class="c138 c43">6. Audio Processing Unit (APU)</span>
+==============================================================
 
 <span class="c1">Due to limitations of our FPGA design board (no D2A converter) and time constraints, our group did not implement the APU. Instead, we created the register interface for the APU, so that the CPU could still read and write from the registers. The following section is provided for reference only.</span>
 
