@@ -1,6 +1,17 @@
+# FPGA Implementation of the Nintendo Entertainment System (NES)
+
+#### *Four People Generating A Nintendo Entertainment System (FPGANES)*
+
+#### *Eric Sullivan, Jonathan Ebert, Patrick Yang, Pavan Holla*
+
+## Final Report
+
+### University of Wisconsin - Madison
+### ECE 554 Spring 2017
+
 <span id="NES.xhtml"></span>
 
-<span class="c148 c220">FPGA Implementation of the Nintendo Entertainment System (NES)</span>
+<!--span class="c148 c220">FPGA Implementation of the Nintendo Entertainment System (NES)</span>
 
 <span class="c162 c28 c148 c205">Four People Generating A Nintendo Entertainment System (FPGANES)</span>
 
@@ -44,7 +55,7 @@
 
 <span class="c148 c160"></span>
 
-<span class="c138 c43"></span>
+<span class="c138 c43"></span-->
 ==============================
 
 ------------------------------------------------------------------------
@@ -52,7 +63,7 @@
 <span class="c138 c43"></span>
 ==============================
 
-1.  <span>Introduction</span>
+    <span>1. Introduction</span>
     =========================
 
 <span class="c41 c28">Following the video game crash in the early 1980s, Nintendo released their first video game console, the Nintendo Entertainment System (NES). Following a slow release and early recalls, the console began to gain momentum in a market that many thought had died out, and the NES is still appreciated by enthusiasts today. A majority of its early success was due to the relationship that Nintendo created with third-party software developers. Nintendo required that restricted developers from publishing games without a license distributed by Nintendo. This decision led to higher quality games and helped to sway the public opinion on video games, which had been plagued by poor games for other gaming consoles. </span>
@@ -77,12 +88,12 @@
 
 <span class="c41 c28"></span>
 
-1.  <span class="c43 c138">Top Level Block Diagram</span>
+    <span class="c43 c138">2. Top Level Block Diagram</span>
     =====================================================
 
 <!-- -->
 
-1.  <span class="c42">Top level description</span>
+   <span class="c42">3. Top level description</span>
     ----------------------------------------------
 
 <span class="c1">Here is an overview of each module in our design. Our report has a section dedicated for each of these modules.</span>
@@ -98,21 +109,21 @@
 
 <!-- -->
 
-1.  <span class="c42">Data Flow Diagram</span>
+   <span class="c42">1. Data Flow Diagram</span>
     ------------------------------------------
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 611.00px; height: 296.00px;"> ![](images/image3.png) </span>
 
 <span class="c26">Figure 1: System level data flow diagram</span>
 
-1.  <span class="c42"> Control Flow Diagram</span>
+   <span class="c42">2. Control Flow Diagram</span>
     ----------------------------------------------
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 624.00px; height: 356.00px;"> ![](images/image2.png) </span>
 
 <span class="c26">Figure 2: System level control flow diagram.</span>
 
-1.  <span class="c138 c43">CPU</span>
+   <span class="c138 c43">4. CPU</span>
     =================================
 
 <span class="c42">CPU Registers</span>
@@ -136,23 +147,23 @@
 
 -   <span class="c1">Stores where to jump to or where to get indirect access from.</span>
 
-1.  <span class="c1">ADV : AD Value Register</span>
+2.  <span class="c1">ADV : AD Value Register</span>
 
 -   <span class="c1">Stores the value from indirect access by AD.</span>
 
-1.  <span class="c1">BA : Base Address Register</span>
+3.  <span class="c1">BA : Base Address Register</span>
 
 -   <span class="c1">Stores the base address before index calculation. After the calculation, the value is transferred to AD if needed.</span>
 
-1.  <span class="c1">BAV : BA Value Register</span>
+4.  <span class="c1">BAV : BA Value Register</span>
 
 -   <span class="c1">Stores the value from indirect access by BA.</span>
 
-1.  <span class="c1">IMM : Immediate Register</span>
+5.  <span class="c1">IMM : Immediate Register</span>
 
 -   <span class="c1">Stores the immediate value from the memory.</span>
 
-1.  <span class="c1">Offset</span>
+6.  <span class="c1">Offset</span>
 
 -   <span class="c1">Stores the offset value of branch from memory</span>
 
@@ -1489,7 +1500,7 @@
 
 <span class="c29"></span>
 
-1.  <span class="c138 c43">Picture Processing Unit</span>
+   <span class="c138 c43">5. Picture Processing Unit</span>
     =====================================================
 
 <span class="c1"></span>
@@ -2723,7 +2734,7 @@
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 197.53px; height: 186.50px;"> ![test (1).png](images/image5.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 200.68px; height: 187.50px;"> ![test (2).png](images/image7.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 199.53px; height: 189.50px;"> ![test (3).png](images/image6.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 202.30px; height: 187.50px;"> ![test (4).png](images/image19.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 201.50px; height: 187.67px;"> ![test (5).png](images/image26.png) </span> <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 198.60px; height: 186.50px;"> ![test (10).png](images/image8.png) </span>
 
-1.  <span>Memor</span> <span>y Maps</span>
+   <span>6. Memory Maps</span>
     ======================================
 
 <span class="c1">Cartridges are a Read-Only Memory that contains necessary data to run games. However, it is possible that in some cases that a cartridge holds more data than the CPU can address to. In this case, memory mapper comes into play and changes the mapping as needed so that one address can point to multiple locations in a cartridge. For our case, the end goal was to get the game Super Mario Bros. running on our FPGA. This game does not use a memory mapper, so we did not work on any memory mappers. In the future, we might add support for the other memory mapping systems so that we can play other games.</span>
@@ -3380,7 +3391,7 @@
 <span class="c138 c43"></span>
 ==============================
 
-1.  <span class="c138 c43">Controllers (SPART)</span>
+   <span class="c138 c43">7. Controllers (SPART)</span>
     =================================================
 
 <span class="c1">The controller module allows users to provide input to the FPGA. We opted to create a controller simulator program instead of using an actual NES joypad. This decision was made because the NES controllers used a proprietary port and because the available USB controllers lacked specification sheets. The simulator program communicates with the FPGA using the SPART interface, which is similar to UART. Our SPART module used 8 data bits, no parity, and 1 stop bit for serial communication. All data was received automatically into an 8 bit buffer by the SPART module at 2400 baud. In addition to the SPART module, we also needed a controller driver to allow the CPU to interface with the controllers. The controllers are memory mapped to $4016 and $4017 for CPU to read.</span>
@@ -3720,7 +3731,7 @@
 <span class="c138 c43"></span>
 ==============================
 
-1.  <span class="c138 c43">VGA</span>
+   <span class="c138 c43">8. VGA</span>
     =================================
 
 <span class="c1">The VGA interface consists of sending the pixel data to the screen one row at a time from left to right. In between each row it requires a special signal called horizontal sync (hsync) to be asserted at a specific time when only black pixels are being sent, called the blanking interval. This happens until the bottom of the screen is reached when another blanking interval begins where the interface is only sending black pixels, but instead of hsync being asserted the vertical sync signal is asserted. </span>
@@ -4208,7 +4219,7 @@
 <span class="c138 c43"></span>
 ==============================
 
-1.  <span class="c138 c43">Software</span>
+   <span class="c138 c43">9. Software</span>
     ======================================
 
 <span class="c42">Controller Simulator</span>
@@ -5370,7 +5381,7 @@
 
 <span class="c1">We also implemented Tic Tac Toe in assembly for initial integration tests. We bundled it into a NES ROM, and thus can run it on existing emulators as well as our own hardware.</span>
 
-1.  <span class="c138 c43">Testing & Debug</span>
+   <span class="c138 c43">10. Testing & Debug</span>
     =============================================
 
 <span class="c1">Our debugging process had multiple steps</span>
@@ -5385,7 +5396,7 @@
 
 <span>For detailed check, we wrote an automated testbench to confirm the functionality. The CPU test suite was from </span> <span class="c157"> <a href="https://www.google.com/url?q=https://github.com/Klaus2m5/&amp;sa=D&amp;ust=1494576256694000&amp;usg=AFQjCNH5C2c6mP2PLu8ndy--7mzFJquIMg" class="c40">https://github.com/Klaus2m5/</a> </span> <span> and we modified the test suite to run on the fceux NES emulator.</span>
 
-<span>I</span> <span class="c42">ntegrated Simulation</span>
+<span class="c42">Integrated Simulation</span>
 ------------------------------------------------------------
 
 <span class="c1">After integration, we simulated the whole system with the ROM installed. We were able to get a detailed information at each cycle but the simulation took too long. It took about 30 minutes to simulate CPU operation for one second. Thus we designed a debug and trace module in hardware that could output CPU traces during actual gameplay..</span>
@@ -5398,12 +5409,12 @@
 ------------------------------------------------------------------------
 
 </p>
-1.  <span>Results</span>
+    <span>11. Results</span>
     ====================
 
 <span class="c1">We were able to get NES working, thanks to our rigorous verification process, and onboard debug methodology. Some of the games we got working include Super Mario Bros, Galaga, Tennis, Golf, Donkey Kong, Ms Pacman, Defender II, Pinball, and Othello.  </span>
 
-1.  <span class="c138 c43">Possible Improvements</span>
+     <span class="c138 c43">12. Possible Improvements</span>
     ===================================================
 
 -   <span class="c1">Create a working audio processing unit</span>
@@ -5413,7 +5424,7 @@
 -   <span class="c1">HDMI</span>
 -   <span class="c1">VGA buffer instead of two RAM blocks to save space</span>
 
-1.  <span>References and Links</span>
+     <span>13. References and Links</span>
     =================================
 
 <span class="c117">Ferguson, Scott. "PPU Tutorial." N.p., n.d. Web. &lt;</span> <span class="c117 c157"> <a href="https://www.google.com/url?q=https://opcode-defined.quora.com&amp;sa=D&amp;ust=1494576256706000&amp;usg=AFQjCNFS78o1vjYXTL61EsEMFxU5j_Gjng" class="c40">https://opcode-defined.quora.com</a> </span> <span class="c1 c117">&gt;.</span>
@@ -5441,8 +5452,8 @@
 
 <span class="c1"></span>
 
-1.  <span>Co</span> <span class="c138 c43">ntributions</span>
-    =========================================================
+     <span class="c138 c43">14. Contributions</span>
+=========================================================
 
 <span class="c42">Eric Sullivan</span>
 --------------------------------------
