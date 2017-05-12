@@ -1,18 +1,23 @@
+# FPGANES
+
+__THE FOLLOWING TEXT WAS GENERATED FROM PANDOC AND HAS FORMATTING ISSUES__
+__PLEASE SEE THE PROVIDED PDF [HERE](documents/FinalReport.pdf) FOR A BETTER VERSION__
+
 ---
-#FPGA Implementation of the Nintendo Entertainment System (NES)
+# FPGA Implementation of the Nintendo Entertainment System (NES)
 ---
 
 *Four People Generating A Nintendo Entertainment System (FPGANES)*
 
 *Eric Sullivan, Jonathan Ebert, Patrick Yang, Pavan Holla*
 
-##Final Report
+## Final Report
 
-###University of Wisconsin-Madison
+### University of Wisconsin-Madison
 
-###ECE 554
+### ECE 554
 
-###Spring 2017
+### Spring 2017
 
 Introduction
 ============
@@ -1276,55 +1281,55 @@ We will include an assembler that allows custom software to be developed for our
   **Opcode**  | **Mode**     | **Hex** | **Opcode** | **Mode**     | **Hex** | **Opcode** | **Mode**     | **Hex**
   ------------|--------------|---------|------------|--------------|---------|------------|--------------|---------
   ADC         |Immediate     |69       |DEC         |Zero Page     |C6       |ORA         |Absolute      |0D
-  ADC          Zero Page      65        DEC          Zero Page, X   D6        ORA          Absolute, X    1D
-  ADC          Zero Page, X   75        DEC          Absolute       CE        ORA          Absolute, Y    19
-  ADC          Absolute       6D        DEC          Absolute, X    DE        ORA          Indirect, X    01
-  ADC          Absolute, X    7D        DEX          Implied        CA        ORA          Indirect, Y    11
-  ADC          Absolute, Y    79        DEY          Implied        88        PHA          Implied        48
-  ADC          Indirect, X    61        EOR          Immediate      49        PHP          Implied        08
-  ADC          Indirect, Y    71        EOR          Zero Page      45        PLA          Implied        68
-  AND          Immediate      29        EOR          Zero Page, X   55        PLP          Implied        28
-  AND          Zero Page      25        EOR          Absolute       4D        ROL          Accumulator    2A
-  AND          Zero Page, X   35        EOR          Absolute, X    5D        ROL          Zero Page      26
-  AND          Absolute       2D        EOR          Absolute, Y    59        ROL          Zero Page, X   36
-  AND          Absolute, X    3D        EOR          Indirect, X    41        ROL          Absolute       2E
-  AND          Absolute, Y    39        EOR          Indirect, Y    51        ROL          Absolute, X    3E
-  AND          Indirect, X    21        INC          Zero Page      E6        ROR          Accumulator    6A
-  AND          Indirect, Y    31        INC          Zero Page, X   F6        ROR          Zero Page      66
-  ASL          Accumulator    0A        INC          Absolute       EE        ROR          Zero Page, X   76
-  ASL          Zero Page      06        INC          Absolute, X    FE        ROR          Absolute       6E
-  ASL          Zero Page, X   16        INX          Implied        E8        ROR          Absolute, X    7E
-  ASL          Absolute       0E        INY          Implied        C8        RTI          Implied        40
-  ASL          Absolute, X    1E        JMP          Indirect       6C        RTS          Implied        60
-  BCC          Relative       90        JMP          Absolute       4C        SBC          Immediate      E9
-  BCS          Relative       B0        JSR          Absolute       20        SBC          Zero Page      E5
-  BEQ          Relative       F0        LDA          Immediate      A9        SBC          Zero Page, X   F5
-  BIT          Zero Page      24        LDA          Zero Page      A5        SBC          Absolute       ED
-  BIT          Absolute       2C        LDA          Zero Page, X   B5        SBC          Absolute, X    FD
-  BMI          Relative       30        LDA          Absolute       AD        SBC          Absolute, Y    F9
-  BNE          Relative       D0        LDA          Absolute, X    BD        SBC          Indirect, X    E1
-  BPL          Relative       10        LDA          Absolute, Y    B9        SBC          Indirect, Y    F1
-  BRK          Implied        00        LDA          Indirect, X    A1        SEC          Implied        38
-  BVC          Relative       50        LDA          Indirect, Y    B1        SED          Implied        F8
-  BVS          Relative       70        LDX          Immediate      A2        SEI          Implied        78
-  CLC          Implied        18        LDX          Zero Page      A6        STA          Zero Page      85
-  CLD          Implied        D8        LDX          Zero Page, Y   B6        STA          Zero Page, X   95
-  CLI          Implied        58        LDX          Absolute       AE        STA          Absolute       8D
-  CLV          Implied        B8        LDX          Absolute, Y    BE        STA          Absolute, X    9D
-  CMP          Immediate      C9        LDY          Immediate      A0        STA          Absolute, Y    99
-  CMP          Zero Page      C5        LDY          Zero Page      A4        STA          Indirect, X    81
-  CMP          Zero Page, X   D5        LDY          Zero Page, X   B4        STA          Indirect, Y    91
-  CMP          Absolute       CD        LDY          Absolute       AC        STX          Zero Page      86
-  CMP          Absolute, X    DD        LDY          Absolute, X    BC        STX          Zero Page, Y   96
-  CMP          Absolute, Y    D9        LSR          Accumulator    4A        STX          Absolute       8E
-  CMP          Indirect, X    C1        LSR          Zero Page      46        STY          Zero Page      84
-  CMP          Indirect, Y    D1        LSR          Zero Page, X   56        STY          Zero Page, X   94
-  CPX          Immediate      E0        LSR          Absolute       4E        STY          Absolute       8C
-  CPX          Zero Page      E4        LSR          Absolute, X    5E        TAX          Implied        AA
-  CPX          Absolute       EC        NOP          Implied        EA        TAY          Implied        A8
-  CPY          Immediate      C0        ORA          Immediate      09        TSX          Implied        BA
-  CPY          Zero Page      C4        ORA          Zero Page      05        TXA          Implied        8A
-  CPY          Absolute       CC        ORA          Zero Page, X   15        TXS          Implied        9A
+  ADC         |Zero Page      65        DEC          Zero Page, X   D6        ORA          Absolute, X    1D
+  ADC         |Zero Page, X   75        DEC          Absolute       CE        ORA          Absolute, Y    19
+  ADC         |Absolute       6D        DEC          Absolute, X    DE        ORA          Indirect, X    01
+  ADC         |Absolute, X    7D        DEX          Implied        CA        ORA          Indirect, Y    11
+  ADC         |Absolute, Y    79        DEY          Implied        88        PHA          Implied        48
+  ADC         |Indirect, X    61        EOR          Immediate      49        PHP          Implied        08
+  ADC         |Indirect, Y    71        EOR          Zero Page      45        PLA          Implied        68
+  AND         |Immediate      29        EOR          Zero Page, X   55        PLP          Implied        28
+  AND         |Zero Page      25        EOR          Absolute       4D        ROL          Accumulator    2A
+  AND         |Zero Page, X   35        EOR          Absolute, X    5D        ROL          Zero Page      26
+  AND         |Absolute       2D        EOR          Absolute, Y    59        ROL          Zero Page, X   36
+  AND         |Absolute, X    3D        EOR          Indirect, X    41        ROL          Absolute       2E
+  AND         |Absolute, Y    39        EOR          Indirect, Y    51        ROL          Absolute, X    3E
+  AND         |Indirect, X    21        INC          Zero Page      E6        ROR          Accumulator    6A
+  AND         |Indirect, Y    31        INC          Zero Page, X   F6        ROR          Zero Page      66
+  ASL         |Accumulator    0A        INC          Absolute       EE        ROR          Zero Page, X   76
+  ASL         |Zero Page      06        INC          Absolute, X    FE        ROR          Absolute       6E
+  ASL         |Zero Page, X   16        INX          Implied        E8        ROR          Absolute, X    7E
+  ASL         |Absolute       0E        INY          Implied        C8        RTI          Implied        40
+  ASL         |Absolute, X    1E        JMP          Indirect       6C        RTS          Implied        60
+  BCC         |Relative       90        JMP          Absolute       4C        SBC          Immediate      E9
+  BCS         |Relative       B0        JSR          Absolute       20        SBC          Zero Page      E5
+  BEQ         |Relative       F0        LDA          Immediate      A9        SBC          Zero Page, X   F5
+  BIT         |Zero Page      24        LDA          Zero Page      A5        SBC          Absolute       ED
+  BIT         |Absolute       2C        LDA          Zero Page, X   B5        SBC          Absolute, X    FD
+  BMI         |Relative       30        LDA          Absolute       AD        SBC          Absolute, Y    F9
+  BNE         |Relative       D0        LDA          Absolute, X    BD        SBC          Indirect, X    E1
+  BPL         |Relative       10        LDA          Absolute, Y    B9        SBC          Indirect, Y    F1
+  BRK         |Implied        00        LDA          Indirect, X    A1        SEC          Implied        38
+  BVC         |Relative       50        LDA          Indirect, Y    B1        SED          Implied        F8
+  BVS         |Relative       70        LDX          Immediate      A2        SEI          Implied        78
+  CLC         |Implied        18        LDX          Zero Page      A6        STA          Zero Page      85
+  CLD         |Implied        D8        LDX          Zero Page, Y   B6        STA          Zero Page, X   95
+  CLI         |Implied        58        LDX          Absolute       AE        STA          Absolute       8D
+  CLV         |Implied        B8        LDX          Absolute, Y    BE        STA          Absolute, X    9D
+  CMP         |Immediate      C9        LDY          Immediate      A0        STA          Absolute, Y    99
+  CMP         |Zero Page      C5        LDY          Zero Page      A4        STA          Indirect, X    81
+  CMP         |Zero Page, X   D5        LDY          Zero Page, X   B4        STA          Indirect, Y    91
+  CMP         |Absolute       CD        LDY          Absolute       AC        STX          Zero Page      86
+  CMP         |Absolute, X    DD        LDY          Absolute, X    BC        STX          Zero Page, Y   96
+  CMP         |Absolute, Y    D9        LSR          Accumulator    4A        STX          Absolute       8E
+  CMP         |Indirect, X    C1        LSR          Zero Page      46        STY          Zero Page      84
+  CMP         |Indirect, Y    D1        LSR          Zero Page, X   56        STY          Zero Page, X   94
+  CPX         |Immediate      E0        LSR          Absolute       4E        STY          Absolute       8C
+  CPX         |Zero Page      E4        LSR          Absolute, X    5E        TAX          Implied        AA
+  CPX         |Absolute       EC        NOP          Implied        EA        TAY          Implied        A8
+  CPY         |Immediate      C0        ORA          Immediate      09        TSX          Implied        BA
+  CPY         |Zero Page      C4        ORA          Zero Page      05        TXA          Implied        8A
+  CPY         |Absolute       CC        ORA          Zero Page, X   15        TXS          Implied        9A
                                                                               TYA          Implied        98
 
 ### NES Assembly Formats
