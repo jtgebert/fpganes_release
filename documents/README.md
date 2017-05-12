@@ -1,10 +1,8 @@
-<span id="anchor"></span>FPGA Implementation of the Nintendo Entertainment System (NES)
-
 *Four People Generating A Nintendo Entertainment System (FPGANES)*
 
 *Eric Sullivan, Jonathan Ebert, Patrick Yang, Pavan Holla*
 
-<span id="anchor-1"></span>Final Report
+<span id="_byhn74w1sckk" class="anchor"></span>Final Report
 
 University of Wisconsin-Madison
 
@@ -12,54 +10,69 @@ ECE 554
 
 Spring 2017
 
-<span id="anchor-2"></span>
-
-<span id="anchor-3"></span>
-
-1.  <span id="anchor-4"></span>Introduction
+Introduction
+============
 
 Following the video game crash in the early 1980s, Nintendo released their first video game console, the Nintendo Entertainment System (NES). Following a slow release and early recalls, the console began to gain momentum in a market that many thought had died out, and the NES is still appreciated by enthusiasts today. A majority of its early success was due to the relationship that Nintendo created with third-party software developers. Nintendo required that restricted developers from publishing games without a license distributed by Nintendo. This decision led to higher quality games and helped to sway the public opinion on video games, which had been plagued by poor games for other gaming consoles.
 
 Our motivation is to better understand how the NES worked from a hardware perspective, as the NES was an extremely advanced console when it was released in 1985 (USA). The NES has been recreated multiple times in software emulators, but has rarely been done in a hardware design language, which makes this a unique project. Nintendo chose to use the 6502 processor, also used by Apple in the Apple II, and chose to include a picture processing unit to provide a memory efficient way to output video to the TV. Our goal was to recreate the CPU and PPU in hardware, so that we could run games that were run on the original console. In order to exactly recreate the original console, we needed to include memory mappers, an audio processing unit, a DMA unit, a VGA interface, and a way to use a controller for input. In addition, we wrote our own assembler and tic-tac-toe game to test our implementation. The following sections will explain the microarchitecture of the NES. Much of the information was gleaned from nesdev.com, and from other online forums that reverse engineered the NES.
 
-1.  <span id="anchor-5"></span>Top Level Block Diagram
+1.  Top Level Block Diagram
+    =======================
 
-    1.  <span id="anchor-6"></span>Top level description
+    1.  Top level description
+        ---------------------
 
-Here is an overview of each module in our design. Our report has a section dedicated for each of these modules.
+> Here is an overview of each module in our design. Our report has a section dedicated for each of these modules.
 
-1.  1.  1.  PPU - The PPU(Picture Processing Unit) is responsible for rendering graphics on screen. It receives memory mapped accesses from the CPU, and renders graphics from memory, providing RGB values.
-        2.  CPU - Our CPU is a 6502 implementation. It is responsible for controlling all other modules in the NES. At boot, CPU starts reading programs at the address 0xFFFC.
-        3.  DMA - The DMA transfers chunks of data from CPU address space to PPU address space. It is faster than performing repeated Loads and Stores in the CPU.
-        4.  Display Memory and VGA - The PPU writes to the display memory, which is subsequently read out by the VGA module. The VGA module produces the hsync, vsync and RGB values that a monitor requires.
-        5.  Controller - A program runs on a host computer which transfers serial data to the FPGA. The protocol used by the controller is UART in our case
-        6.  APU - Generates audio in the NES. However, we did not implement this module.
-        7.  CHAR RAM/ RAM - Used by the CPU and PPU to store temporary data
-        8.  PROG ROM/ CHAR ROM - PROG ROM contains the software(instructions) that runs the game. CHAR ROM on the other hand contains mostly image data and graphics used in the game.
+1.  PPU - The PPU(Picture Processing Unit) is responsible for rendering graphics on screen. It receives memory mapped accesses from the CPU, and renders graphics from memory, providing RGB values.
 
-    2.  <span id="anchor-7"></span>Data Flow Diagram
+2.  CPU - Our CPU is a 6502 implementation. It is responsible for controlling all other modules in the NES. At boot, CPU starts reading programs at the address 0xFFFC.
 
-<img src="Pictures/100002010000026300000128FF4A8F5F24596ACC.png" width="611" height="296" />
+3.  DMA - The DMA transfers chunks of data from CPU address space to PPU address space. It is faster than performing repeated Loads and Stores in the CPU.
+
+4.  Display Memory and VGA - The PPU writes to the display memory, which is subsequently read out by the VGA module. The VGA module produces the hsync, vsync and RGB values that a monitor requires.
+
+5.  Controller - A program runs on a host computer which transfers serial data to the FPGA. The protocol used by the controller is UART in our case
+
+6.  APU - Generates audio in the NES. However, we did not implement this module.
+
+7.  CHAR RAM/ RAM - Used by the CPU and PPU to store temporary data
+
+8.  PROG ROM/ CHAR ROM - PROG ROM contains the software(instructions) that runs the game. CHAR ROM on the other hand contains mostly image data and graphics used in the game.
+
+Data Flow Diagram
+-----------------
+
+<img src="media/image9.png" width="611" height="296" />
 
 Figure 1: System level data flow diagram
 
-1.  1.  <span id="anchor-8"></span> Control Flow Diagram
+ Control Flow Diagram
+---------------------
 
-<img src="Pictures/10000201000002AE000001879CEF9FE9E41093E2.png" width="624" height="355" />
+<img src="media/image6.png" width="624" height="356" />
 
 Figure 2: System level control flow diagram.
 
-1.  <span id="anchor-9"></span>CPU
+CPU
+===
 
-<span id="anchor-10"></span>CPU Registers
+CPU Registers
+-------------
 
 The CPU of the NES is the MOS 6502. It is an accumulator plus index register machine. There are five primary registers on which operations are performed:
 
 1.  PC : Program Counter
+
 2.  Accumulator(A) : Keeps track of results from ALU
+
 3.  X : X index register
+
 4.  Y : Y index register
+
 5.  Stack pointer
+
 6.  Status Register : Negative, Overflow, Unused, Break, Decimal, Interrupt, Zero, Carry
 
     -   Break means that the current interrupt is from software interrupt, BRK
@@ -92,109 +105,129 @@ There are 6 secondary registers:
 
     -   Stores the offset value of branch from memory
 
-<span id="anchor-11"></span>CPU ISA
+CPU ISA
+-------
 
 The ISA may be classified into a few broad operations:
 
 -   Load into A,X,Y registers from memory
+
 -   Perform arithmetic operation on A,X or Y
+
 -   Move data from one register to another
+
 -   Program control instructions like Jump and Branch
+
 -   Stack operations
+
 -   Complex instructions that read, modify and write back memory.
 
-<span id="anchor-12"></span>CPU Addressing Modes
+CPU Addressing Modes
+--------------------
 
 Additionally, there are thirteen addressing modes which these operations can use. They are
 
 -   **Accumulator** – The data in the accumulator is used.
+
 -   **Immediate** - The byte in memory immediately following the instruction is used.
+
 -   **Zero Page** – The Nth byte in the first page of RAM is used where N is the byte in memory immediately following the instruction.
+
 -   **Zero Page, X Index** – The (N+X)th byte in the first page of RAM is used where N is the byte in memory immediately following the instruction and X is the contents of the X index register.
+
 -   **Zero Page, Y Index** – Same as above but with the Y index register
+
 -   **Absolute** – The two bytes in memory following the instruction specify the absolute address of the byte of data to be used.
+
 -   **Absolute, X Index** - The two bytes in memory following the instruction specify the base address. The contents of the X index register are then added to the base address to obtain the address of the byte of data to be used.
+
 -   **Absolute, Y Index** – Same as above but with the Y index register
+
 -   **Implied** – Data is either not needed or the location of the data is implied by the instruction.
+
 -   **Relative** – The content of sum of (the program counter and the byte in memory immediately following the instruction) is used.
+
 -   **Absolute Indirect** - The two bytes in memory following the instruction specify the absolute address of the two bytes that contain the absolute address of the byte of data to be used.
+
 -   **(Indirect, X)** – A combination of Indirect Addressing and Indexed Addressing
+
 -   **(Indirect), Y** - A combination of Indirect Addressing and Indexed Addressing
 
-<span id="anchor-13"></span>CPU Interrupts
+CPU Interrupts
+--------------
 
 The 6502 supports three interrupts. The reset interrupt routine is called after a physical reset. The other two interrupts are the non\_maskable\_interrupt(NMI) and the general\_interrupt(IRQ). The general\_interrupt can be disabled by software whereas the others cannot. When interrupt occurs, the CPU finishes the current instruction then PC jumps to the specified interrupt vector then return when finished.
 
-<span id="anchor-14"></span>CPU Opcode Matrix
+CPU Opcode Matrix
+-----------------
 
 The NES 6502 ISA is a CISC like ISA with 56 instructions. These 56 instructions can pair up with addressing modes to form various opcodes. The opcode is always 8 bits, however based on the addressing mode, upto 4 more memory location may need to be fetched.The memory is single cycle, i.e data\[7:0\] can be latched the cycle after address\[15:0\] is placed on the bus. The following tables summarize the instructions available and possible addressing modes:
 
-|                  |
-|------------------|
 | **Storage**      |
-| LDA              |
-| LDX              |
-| LDY              |
-| STA              |
-| STX              |
-| STY              |
-| TAX              |
-| TAY              |
-| TSX              |
-| TXA              |
-| TXS              |
-| TYA              |
+|------------------|--------------------------------------|
+| LDA              | Load A with M                        |
+| LDX              | Load X with M                        |
+| LDY              | Load Y with M                        |
+| STA              | Store A in M                         |
+| STX              | Store X in M                         |
+| STY              | Store Y in M                         |
+| TAX              | Transfer A to X                      |
+| TAY              | Transfer A to Y                      |
+| TSX              | Transfer Stack Pointer to X          |
+| TXA              | Transfer X to A                      |
+| TXS              | Transfer X to Stack Pointer          |
+| TYA              | Transfer Y to A                      |
 | **Arithmetic**   |
-| ADC              |
-| DEC              |
-| DEX              |
-| DEY              |
-| INC              |
-| INX              |
-| INY              |
-| SBC              |
+| ADC              | Add M to A with Carry                |
+| DEC              | Decrement M by One                   |
+| DEX              | Decrement X by One                   |
+| DEY              | Decrement Y by One                   |
+| INC              | Increment M by One                   |
+| INX              | Increment X by One                   |
+| INY              | Increment Y by One                   |
+| SBC              | Subtract M from A with Borrow        |
 | **Bitwise**      |
-| AND              |
-| ASL              |
-| BIT              |
-| EOR              |
-| LSR              |
-| ORA              |
-| ROL              |
-| ROR              |
+| AND              | AND M with A                         |
+| ASL              | Shift Left One Bit (M or A)          |
+| BIT              | Test Bits in M with A                |
+| EOR              | Exclusive-Or M with A                |
+| LSR              | Shift Right One Bit (M or A)         |
+| ORA              | OR M with A                          |
+| ROL              | Rotate One Bit Left (M or A)         |
+| ROR              | Rotate One Bit Right (M or A)        |
 | **Branch**       |
-| BCC              |
-| BCS              |
-| BEQ              |
-| BMI              |
-| BNE              |
-| BPL              |
-| BVC              |
-| BVS              |
+| BCC              | Branch on Carry Clear                |
+| BCS              | Branch on Carry Set                  |
+| BEQ              | Branch on Result Zero                |
+| BMI              | Branch on Result Minus               |
+| BNE              | Branch on Result not Zero            |
+| BPL              | Branch on Result Plus                |
+| BVC              | Branch on Overflow Clear             |
+| BVS              | Branch on Overflow Set               |
 | **Jump**         |
-| JMP              |
-| JSR              |
-| RTI              |
-| RTS              |
+| JMP              | Jump to Location                     |
+| JSR              | Jump to Location Save Return Address |
+| RTI              | Return from Interrupt                |
+| RTS              | Return from Subroutine               |
 | **Status Flags** |
-| CLC              |
-| CLD              |
-| CLI              |
-| CLV              |
-| CMP              |
-| CPX              |
-| CPY              |
-| SEC              |
-| SED              |
-| SEI              |
+| CLC              | Clear Carry Flag                     |
+| CLD              | Clear Decimal Mode                   |
+| CLI              | Clear interrupt Disable Bit          |
+| CLV              | Clear Overflow Flag                  |
+| CMP              | Compare M and A                      |
+| CPX              | Compare M and X                      |
+| CPY              | Compare M and Y                      |
+| SEC              | Set Carry Flag                       |
+| SED              | Set Decimal Mode                     |
+| SEI              | Set Interrupt Disable Status         |
 | **Stack**        |
-| PHA              |
-| PHP              |
-| PLA              |
-| PLP              |
+| PHA              | Push A on Stack                      |
+| PHP              | Push Processor Status on Stack       |
+| PLA              | Pull A from Stack                    |
+| PLP              | Pull Processor Status from Stack     |
 | **System**       |
-| BRK              |
-| NOP              |
+| BRK              | Force Break                          |
+| NOP              | No Operation                         |
 
 The specific opcode hex values are specified in the Assembler section.
 
@@ -206,11 +239,11 @@ or
 
 [*http://www.thealmightyguru.com/Games/Hacking/Wiki/index.php/6502\_Opcodes*](http://www.thealmightyguru.com/Games/Hacking/Wiki/index.php/6502_Opcodes)
 
-<span id="anchor-15"></span>CPU Block Diagram<img src="Pictures/100002010000031F000001F30970EE18FC7215DA.png" width="624" height="389" />
+CPU Block Diagram<img src="media/image2.png" width="624" height="389" />
+------------------------------------------------------------------------
 
-|                   |                                                                                                                                                                                      |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Block**         | **Primary Function**                                                                                                                                                                 |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Decode            | Decode the current instruction. Classifies the opcode into an instruction\_type(arithmetic,ld etc) and addressing mode(immediate, indirect etc)                                      |
 | Processor Control | State machine that keeps track of current instruction stage, and generates signals to load registers.                                                                                |
 | ALU               | Performs ALU ops and handles Status Flags                                                                                                                                            |
@@ -221,9 +254,8 @@ or
 
 The following table presents a high level overview of how each instruction is handled.
 
-|                  |                               |                                                             |
-|------------------|-------------------------------|-------------------------------------------------------------|
 | **Cycle Number** | **Blocks **                   | **Action**                                                  |
+|------------------|-------------------------------|-------------------------------------------------------------|
 | 0                | Processor Control → Registers | Instruction Fetch                                           |
 | 1                | Register → Decode             | Classify instruction and addressing mode                    |
 | 1                | Decode → Processor Control    | Init state machine for instruction type and addressing mode |
@@ -241,9 +273,8 @@ Considering one of the simplest instructions ADC immediate,which takes two cycle
 
 Instruction\_type=ARITHMETIC, addressing mode= IMMEDIATE
 
-|                                          |                        |                                           |
-|------------------------------------------|------------------------|-------------------------------------------|
 | state=0                                  | state=1                | state=2                                   |
+|------------------------------------------|------------------------|-------------------------------------------|
 | ld\_sel=LD\_INSTR; //instr= memory\_data 
                                            
  pc\_sel=INC\_PC; //pc++                   
@@ -270,11 +301,11 @@ Instruction\_type=ARITHMETIC, addressing mode= IMMEDIATE
 
 All instructions are classified into one of 55 state machines in the cpu specification sheet. The 6502 can take variable time for a single instructions based on certain conditions(page\_cross, branch\_taken etc). These corner case state transitions are also taken care of by processor control.
 
-<span id="anchor-16"></span>CPU Top Level Interface
+CPU Top Level Interface
+-----------------------
 
-|               |             |             |                                                                         |
-|---------------|-------------|-------------|-------------------------------------------------------------------------|
 | Signal name   | Signal Type | Source/Dest | Description                                                             |
+|---------------|-------------|-------------|-------------------------------------------------------------------------|
 | clk           | input       |             | System clock                                                            |
 | rst           | input       |             | System active high reset                                                |
 | nmi           | input       | PPU         | Non maskable interrupt from PPU. Executes BRK instruction in CPU        |
@@ -285,26 +316,26 @@ All instructions are classified into one of 55 state machines in the cpu specifi
 | memory\_read  | output      | RAM         | read enable signal for RAM                                              |
 | memory\_write | output      | RAM         | write enable signal for RAM                                             |
 
-<span id="anchor-17"></span>CPU Instruction Decode Interface
+CPU Instruction Decode Interface
+--------------------------------
 
 The decode module is responsible for classifying the instruction into one of the addressing modes and an instruction type. It also generates the signal that the ALU would eventually use if the instruction passed through the ALU.
 
-|                       |             |                   |                                                                                                                                                                           |
-|-----------------------|-------------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name           | Signal Type | Source/Dest       | Description                                                                                                                                                               |
+|-----------------------|-------------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | instruction\_register | input       | Registers         | Opcode of the current instruction                                                                                                                                         |
 | nmi                   | input       | cpu\_top          | Non maskable interrupt from PPU. Executes BRK instruction in CPU                                                                                                          |
 | instruction\_type     | output      | Processor Control | Type of instruction. Belongs to enum ITYPE.                                                                                                                               |
 | addressing\_mode      | output      | Processor Control | Addressing mode of the opcode in instruction\_register. Belongs to enum AMODE.                                                                                            |
 | alu\_sel              | output      | ALU               | ALU operation expected to be performed by the opcode, eventually. Processor control chooses to use it at a cycle appropriate for the instruction. Belongs to enum DO\_OP. |
 
-<span id="anchor-18"></span>CPU MEM Interface
+CPU MEM Interface
+-----------------
 
 The MEM module is the interface between memory and CPU. It provides appropriate address and read/write signal for the memory. Controlled by the select signals
 
-|                            |             |                   |                                                               |
-|----------------------------|-------------|-------------------|---------------------------------------------------------------|
 | Signal name                | Signal Type | Source/Dest       | Description                                                   |
+|----------------------------|-------------|-------------------|---------------------------------------------------------------|
 | addr\_sel                  | input       | Processor Control | Selects which input to use as address to memory. Enum of ADDR |
 | int\_sel                   | input       | Processor Control | Selects which interrupt address to jump to. Enum of INT\_TYPE |
 | ld\_sel,st\_sel            | input       | Processor Control | Decides whether to read or write based on these signals       |
@@ -312,38 +343,37 @@ The MEM module is the interface between memory and CPU. It provides appropriate 
 | addr                       | output      | Memory            | Address of the memory to read/write                           |
 | read,write                 | output      | Memory            | Selects whether Memory should read or write                   |
 
-<span id="anchor-19"></span>CPU ALU Interface
+CPU ALU Interface
+-----------------
 
 Performs arithmetic, logical operations and operations that involve status registers.
 
-|                     |             |                    |                                                                                                                                                                           |
-|---------------------|-------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name         | Signal Type | Source/Dest        | Description                                                                                                                                                               |
+|---------------------|-------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | in1, in2            | input       | ALU Input Selector | Inputs to the ALU operations selected by ALU Input module.                                                                                                                |
 | alu\_sel            | input       | Processor Control  | ALU operation expected to be performed by the opcode, eventually. Processor control chooses to use it at a cycle appropriate for the instruction. Belongs to enum DO\_OP. |
 | clk, rst            | input       |                    | System clock and active high reset                                                                                                                                        |
 | out                 | output      | to all registers   | Output of ALU operation. sent to all registers and registers decide whether to receive it or ignore it as its next value.                                                 |
 | n, z, v, c, b, d, i | output      |                    | Status Register                                                                                                                                                           |
 
-<span id="anchor-20"></span>ALU Input Selector
+### ALU Input Selector
 
 Selects the input1 and input2 for the ALU
 
-|                                                         |             |                   |                                                                                                                                                 |
-|---------------------------------------------------------|-------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name                                             | Signal Type | Source/Dest       | Description                                                                                                                                     |
+|---------------------------------------------------------|-------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | src1\_sel, src2\_sel                                    | input       | Processor Control | Control signal that determines which sources to take in as inputs to ALU according to the instruction and addressing mode                       |
 | a, bal, bah, adl, pcl, pch, imm, adv, x, bav, y, offset | input       | Registers         | Registers that are candidates to the input to ALU                                                                                               |
 | temp\_status                                            | input       | ALU               | Sometimes status information is required but we don’t want it to affect the status register. So we directly receive temp\_status value from ALU |
 | in1, in2                                                | output      | ALU               | Selected input for the ALU                                                                                                                      |
 
-<span id="anchor-21"></span>CPU Registers Interface
+CPU Registers Interface
+-----------------------
 
 Holds all of the registers
 
-|                                                                                 |             |                   |                                                                                         |
-|---------------------------------------------------------------------------------|-------------|-------------------|-----------------------------------------------------------------------------------------|
 | Signal name                                                                     | Signal Type | Source/Dest       | Description                                                                             |
+|---------------------------------------------------------------------------------|-------------|-------------------|-----------------------------------------------------------------------------------------|
 | clk, rst                                                                        | input       |                   | System clk and rst                                                                      |
 | dest\_sel, pc\_sel, sp\_sel, ld\_sel, st\_sel                                   | input       | Processor Control | Selects which input to accept as new input. enum of DEST, PC, SP, LD, ST                |
 | clr\_adh, clr\_bah                                                              | input       | Processor Control | Clears the high byte of ad, ba                                                          |
@@ -351,13 +381,13 @@ Holds all of the registers
 | data                                                                            | inout       | Memory            | Datapath to Memory. Either receives or sends data according to ld\_sel and st\_sel.     |
 | a, x, y, ir, imm, adv, bav, offset, sp, pc, ad, ba, n, z, v, c, b, d, i, status | output      |                   | Register outputs that can be used by different modules                                  |
 
-<span id="anchor-22"></span>CPU Processor Control Interface
+CPU Processor Control Interface
+-------------------------------
 
 The processor control module maintains the current state that the instruction is in and decides the control signals for the next state. Once the instruction type and addressing modes are decoded, the processor control block becomes aware of the number of cycles the instruction will take. Thereafter, at each clock cycle it generates the required control signals.
 
-|                   |             |             |                                                                                                                                                                           |
-|-------------------|-------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name       | Signal Type | Source/Dest | Description                                                                                                                                                               |
+|-------------------|-------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | instruction\_type | input       | Decode      | Type of instruction. Belongs to enum ITYPE.                                                                                                                               |
 | addressing\_mode  | input       | Decode      | Addressing mode of the opcode in instruction\_register. Belongs to enum AMODE.                                                                                            |
 | alu\_ctrl         | input       | Decode      | ALU operation expected to be performed by the opcode, eventually. Processor control chooses to use it at a cycle appropriate for the instruction. Belongs to enum DO\_OP. |
@@ -374,11 +404,11 @@ The processor control module maintains the current state that the instruction is
 | src2\_sel         | output      | ALU         | Selects src2 for ALU. Belongs to enum SRC2                                                                                                                                |
 | st\_sel           | output      | Registers   | Selects the register whose value will be placed on dout. Belongs to enum ST                                                                                               |
 
-<span id="anchor-23"></span>CPU Enums
+CPU Enums
+---------
 
-|           |                                                                                                                                                                                                                  |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Enum name | Legal Values                                                                                                                                                                                                     |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ITYPE     | ARITHMETIC,BRANCH,BREAK,CMPLDX,CMPLDY,INTERRUPT,JSR,JUMP,OTHER,PULL,PUSH,RMW,RTI,RTS,STA,STX,STY                                                                                                                 |
 | AMODE     | ABSOLUTE,ABSOLUTE\_INDEX,ABSOLUTE\_INDEX\_Y,ACCUMULATOR,IMMEDIATE,IMPLIED,INDIRECT,INDIRECT\_X,INDIRECT\_Y,RELATIVE,SPECIAL,ZEROPAGE,ZEROPAGE\_INDEX,ZEROPAGE\_INDEX\_Y                                          |
 | DO\_OP    | DO\_OP\_ADD,DO\_OP\_SUB,DO\_OP\_AND,DO\_OP\_OR,DO\_OP\_XOR,DO\_OP\_ASL,DO\_OP\_LSR,DO\_OP\_ROL,DO\_OP\_ROR,DO\_OP\_SRC2DO\_OP\_CLR\_C,DO\_OP\_CLR\_I,DO\_OP\_CLR\_V,DO\_OP\_SET\_C,DO\_OP\_SET\_I,DO\_OP\_SET\_V |
@@ -390,17 +420,19 @@ The processor control module maintains the current state that the instruction is
 | PC        | AD\_P\_TO\_PC,INC\_PC,KEEP\_PC                                                                                                                                                                                   |
 | SP        | INC\_SP,DEC\_SP                                                                                                                                                                                                  |
 
-1.  <span id="anchor-24"></span>Picture Processing Unit
+Picture Processing Unit
+=======================
 
 The NES picture processing unit or PPU is the unit responsible for handling all of the console's graphical workloads. Obviously this is useful to the CPU because it offloads the highly intensive task of rendering a frame. This means the CPU can spend more time performing the game logic.
 
 The PPU renders a frame by reading in scene data from various memories the PPU has access to such as VRAM, the game cart, and object attribute memory and then outputting an NTSC compliant 256x240 video signal at 60 Hz. The PPU was a special custom designed IC for Nintendo, so no other devices use this specific chip. It operates at a clock speed of 5.32 MHz making it three times faster than the NES CPU. This is one of the areas of difficulty in creating the PPU because it is easy to get the CPU and PPU clock domains out of sync.
 
-<span id="anchor-25"></span>PPU Top Level Schematic
+PPU Top Level Schematic
+-----------------------
 
-<img src="Pictures/1000020100000509000002DD45848B47EABE6CE9.png" width="625" height="355" />
+<img src="media/image27.png" alt="schemeit-project.png" width="625" height="355" />
 
-**6502: **The CPU used in the NES. Communicates with the PPU through simple load/store instructions. This works because the PPU registers are memory mapped into the CPU's address space.
+**6502:** The CPU used in the NES. Communicates with the PPU through simple load/store instructions. This works because the PPU registers are memory mapped into the CPU's address space.
 
 **Address Decoder:** The address decoder is responsible for selecting the chip select of the device the CPU wants to talk to. In the case of the PPU the address decoder will activate if from addresses \[0x2000, 0x2007\].
 
@@ -420,135 +452,148 @@ The PPU renders a frame by reading in scene data from various memories the PPU h
 
 **VGA Interface:** This is where all of the frame data is kept in a frame buffer. This data is then upscaled to 640x480 when it goes out to the monitor.
 
-<span id="anchor-26"></span>PPU Memory Map
+PPU Memory Map
+--------------
 
-<img src="Pictures/10000201000002250000025F39B4DBDFA4E5CBAD.png" width="421" height="466" />
+<img src="media/image40.png" width="421" height="466" />
 
 The PPU memory map is broken up into three distinct regions, the pattern tables, name tables, and palettes. Each of these regions holds data the PPU need to obtain to render a given scanline. The functionality of each part is described in the PPU Rendering section.
 
-<span id="anchor-27"></span>PPU CHAROM
+PPU CHAROM
+----------
 
--   -   ROM from the cartridge is broken in two sections
+-   ROM from the cartridge is broken in two sections
 
-        -   Program ROM
+    -   Program ROM
 
-            -   Contains program code for the 6502
+        -   Contains program code for the 6502
 
-            -   Is mapped into the CPU address space by the mapper
+        -   Is mapped into the CPU address space by the mapper
 
-        -   Character ROM
+    -   Character ROM
 
-            -   Contains sprite and background data for the PPU
+        -   Contains sprite and background data for the PPU
 
-            -   Is mapped into the PPU address space by the mapper
+        -   Is mapped into the PPU address space by the mapper
 
-<span id="anchor-28"></span>PPU Rendering
+PPU Rendering
+-------------
 
--   -   Pattern Tables
+-   Pattern Tables
 
-        -   $0000-$2000 in VRAM
+    -   $0000-$2000 in VRAM
 
-            -   Pattern Table 0 ($0000-$0FFF)
+        -   Pattern Table 0 ($0000-$0FFF)
 
-            -   Pattern Table 1 ($1000-$2000)
+        -   Pattern Table 1 ($1000-$2000)
 
-            -   The program selects which one of these contains sprites and backgrounds
+        -   The program selects which one of these contains sprites and backgrounds
 
-            -   Each pattern table is 16 bytes long and represents 1 8x8 pixel tile
+        -   Each pattern table is 16 bytes long and represents 1 8x8 pixel tile
 
-                -   Each 8x1 row is 2 bytes long
-                -   Each bit in the byte represents a pixel and the corresponding bit for each byte is combined to create a 2 bit color.
+            -   Each 8x1 row is 2 bytes long
 
-                    -   Color\_pixel = {byte2\[0\], byte1\[0\]}
+            -   Each bit in the byte represents a pixel and the corresponding bit for each byte is combined to create a 2 bit color.
 
-                -   So there can only be 4 colors in any given tile
-                -   Rightmost bit is leftmost pixel
+                -   Color\_pixel = {byte2\[0\], byte1\[0\]}
 
-        -   Any pattern that has a value of 0 is transparent i.e. the background color
+            -   So there can only be 4 colors in any given tile
 
-<img src="Pictures/100002010000023C000000EE0CE811F593A61CB7.png" width="414" height="172" />
+            -   Rightmost bit is leftmost pixel
 
--   -   Name Tables
+    -   Any pattern that has a value of 0 is transparent i.e. the background color
 
-        -   $2000-$2FFF in VRAM with $3000-$3EFF as a mirror
-        -   Laid out in memory in 32x30 fashion
+<img src="media/image35.png" width="414" height="172" />
 
-            -   Think of as a 2d array where each element specifies a tile in the pattern table.
+-   Name Tables
 
-            -   This results in a resolution of 256x240
+    -   $2000-$2FFF in VRAM with $3000-$3EFF as a mirror
 
-        -   Although the PPU supports 4 name tables the NES only supplied enough VRAM for 2 this results in 2 of the 4 name tables being mirror
+    -   Laid out in memory in 32x30 fashion
 
-            -   Vertically = horizontal movement
+        -   Think of as a 2d array where each element specifies a tile in the pattern table.
 
-            -   Horizontally = vertical movement
+        -   This results in a resolution of 256x240
 
-        -   Each entry in the name table refers to one pattern table and is one byte. Since there are 32x30=960 entries each name table requires 960 bytes of space the left over 64 bytes are used for attribute tables
-        -   Attribute tables
+    -   Although the PPU supports 4 name tables the NES only supplied enough VRAM for 2 this results in 2 of the 4 name tables being mirror
 
-            -   1 byte entries that contains the palette assignment for a 2x2 grid of tiles
+        -   Vertically = horizontal movement
 
-<img src="Pictures/1000020100000165000001A5F805AA5CBE024D4C.png" width="216" height="254" />
+        -   Horizontally = vertical movement
 
--   -   Sprites
+    -   Each entry in the name table refers to one pattern table and is one byte. Since there are 32x30=960 entries each name table requires 960 bytes of space the left over 64 bytes are used for attribute tables
 
-        -   Just like backgrounds sprite tile data is contained in one of the pattern tables
-        -   But unlike backgrounds sprite information is not contained in name tables but in a special reserved 256 byte RAM called the object attribute memory (OAM)
+    -   Attribute tables
 
-    -   Object Attribute Memory
+        -   1 byte entries that contains the palette assignment for a 2x2 grid of tiles
 
-        -   256 bytes of dedicated RAM
-        -   Each object is allocated 4 bytes of OAM so we can store data about 64 sprites at once
-        -   Each object has the following information stored in OAM
+> <img src="media/image28.png" width="216" height="254" />
 
-            -   X Coordinate
+-   Sprites
 
-            -   Y Coordinate
+    -   Just like backgrounds sprite tile data is contained in one of the pattern tables
 
-            -   Pattern Table Index
+    -   But unlike backgrounds sprite information is not contained in name tables but in a special reserved 256 byte RAM called the object attribute memory (OAM)
 
-            -   Palette Assignment
+-   Object Attribute Memory
 
-            -   Horizontal/Vertical Flip
+    -   256 bytes of dedicated RAM
 
-    -   Palette Table
+    -   Each object is allocated 4 bytes of OAM so we can store data about 64 sprites at once
 
-        -   Located at $3F00-$3F20
+    -   Each object has the following information stored in OAM
 
-            -   $3F00-$3F0F is background palettes
+        -   X Coordinate
 
-            -   $3F10-$3F1F is sprite palettes
+        -   Y Coordinate
 
-        -   Mirrored all the way to $4000
-        -   Each color takes one byte
-        -   Every background tile and sprite needs a color palette.
-        -   When the background or sprite is being rendered the the color for a specific table is looked up in the correct palette and sent to the draw select mux.
+        -   Pattern Table Index
 
-    -   Rendering is broken into two parts which are done for each horizontal scanline
+        -   Palette Assignment
 
-        -   Background Rendering
+        -   Horizontal/Vertical Flip
 
-            -   The background enable register ($2001) controls if the default background color is rendered ($2001) or if background data from the background renderer.
+-   Palette Table
 
-            -   The background data is obtained for every pixel.
+    -   Located at $3F00-$3F20
 
-        -   Sprite Rendering
+        -   $3F00-$3F0F is background palettes
 
-            -   The sprite renderer has room for 8 unique sprites on each scanline.
+        -   $3F10-$3F1F is sprite palettes
 
-            -   For each scanline the renderer looks through the OAM for sprites that need to be drawn on the scanline. If this is the case the sprite is loaded into the scanline local sprites
+    -   Mirrored all the way to $4000
 
-                -   If this number exceeds 8 a flag is set and the behavior is undefined.
+    -   Each color takes one byte
 
-            -   If a sprite should be drawn for a pixel instead of the background the sprite renderer sets the sprite priority line to a mux that decides what to send to the screen and the mux selects the sprite color data.
+    -   Every background tile and sprite needs a color palette.
 
-<span id="anchor-29"></span>PPU Memory Mapped Registers
+    -   When the background or sprite is being rendered the the color for a specific table is looked up in the correct palette and sent to the draw select mux.
+
+-   Rendering is broken into two parts which are done for each horizontal scanline
+
+    -   Background Rendering
+
+        -   The background enable register ($2001) controls if the default background color is rendered ($2001) or if background data from the background renderer.
+
+        -   The background data is obtained for every pixel.
+
+    -   Sprite Rendering
+
+        -   The sprite renderer has room for 8 unique sprites on each scanline.
+
+        -   For each scanline the renderer looks through the OAM for sprites that need to be drawn on the scanline. If this is the case the sprite is loaded into the scanline local sprites
+
+            -   If this number exceeds 8 a flag is set and the behavior is undefined.
+
+        -   If a sprite should be drawn for a pixel instead of the background the sprite renderer sets the sprite priority line to a mux that decides what to send to the screen and the mux selects the sprite color data.
+
+PPU Memory Mapped Registers
+---------------------------
 
 The PPU register interface exists so the CPU can modify and fetch the state elements of the PPU. These state elements include registers that set control signals, VRAM, object attribute memory, and palettes. These state elements then determine how the background and sprite renderers will draw the scene. The PPU register module also contains the pixel mux and palette memory which are used to determine what pixel data to send to the VGA module.
 
-|                         |             |             |                                                                                    |
-|-------------------------|-------------|-------------|------------------------------------------------------------------------------------|
 | Signal name             | Signal Type | Source/Dest | Description                                                                        |
+|-------------------------|-------------|-------------|------------------------------------------------------------------------------------|
 | clk                     | input       |             | System clock                                                                       |
 | rst\_n                  | input       |             | System active low reset                                                            |
 | data\[7:0\]             | inout       | CPU         | Bi directional data bus between the CPU/PPU                                        |
@@ -564,144 +609,151 @@ The PPU register interface exists so the CPU can modify and fetch the state elem
 | frame\_start            | output      | VGA         | Signals the VGA interface that a frame is starting to keep the PPU and VGA in sync |
 | rendering               | output      | VGA         | Signals the VGA interface that pixel data output is valid                          |
 
-<span id="anchor-30"></span>PPU Register Block Diagram
+PPU Register Block Diagram
+--------------------------
 
-<img src="Pictures/10000201000002570000023B3FB99B1C299236C3.png" width="370" height="351" />
+<img src="media/image39.png" alt="Untitled Diagram.png" width="370" height="351" />
 
-<span id="anchor-31"></span>PPU Register Descriptions
+PPU Register Descriptions
+-------------------------
 
--   -   Control registers are mapped into the CPUs address space ($2000 - $2007)
+-   Control registers are mapped into the CPUs address space ($2000 - $2007)
 
-    -   The registers are repeated every eight bytes until address $3FF
+-   The registers are repeated every eight bytes until address $3FF
 
-    -   **PPUCTRL\[7:0\] (**$2000) WRITE
+-   **PPUCTRL\[7:0\] (**$2000) WRITE
 
-        -   \[1:0\]: Base nametable address which is loaded at the start of a frame
+    -   \[1:0\]: Base nametable address which is loaded at the start of a frame
 
-            -   0: $2000
+        -   0: $2000
 
-            -   1: $2400
+        -   1: $2400
 
-            -   2: $2800
+        -   2: $2800
 
-            -   3: $2C00
+        -   3: $2C00
 
-        -   \[2\]: VRAM address increment per CPU read/write of PPUDATA
+    -   \[2\]: VRAM address increment per CPU read/write of PPUDATA
 
-            -   0: Add 1 going across
+        -   0: Add 1 going across
 
-            -   1: Add 32 going down
+        -   1: Add 32 going down
 
-        -   \[3\]: Sprite pattern table for 8x8 sprites
+    -   \[3\]: Sprite pattern table for 8x8 sprites
 
-            -   0: $0000
+        -   0: $0000
 
-            -   1: $1000
+        -   1: $1000
 
-            -   Ignored in 8x16 sprite mode
+        -   Ignored in 8x16 sprite mode
 
-        -   \[4\]: Background pattern table address
+    -   \[4\]: Background pattern table address
 
-            -   0: $0000
+        -   0: $0000
 
-            -   1: $1000
+        -   1: $1000
 
-        -   \[5\]: Sprite size
+    -   \[5\]: Sprite size
 
-            -   0: 8x8
+        -   0: 8x8
 
-            -   1: 8x16
+        -   1: 8x16
 
-        -   \[6\]: PPU master/slave select
+    -   \[6\]: PPU master/slave select
 
-            -   0: Read backdrop from EXT pins
+        -   0: Read backdrop from EXT pins
 
-            -   1: Output color on EXT pins
+        -   1: Output color on EXT pins
 
-        -   \[7\]: Generate NMI interrupt at the start of vertical blanking interval
+    -   \[7\]: Generate NMI interrupt at the start of vertical blanking interval
 
-            -   0: off
+        -   0: off
 
-            -   1: on
+        -   1: on
 
-    -   **PPUMASK\[7:0\] **($2001) WRITE
+-   **PPUMASK\[7:0\]** ($2001) WRITE
 
-        -   \[0\]: Use grayscale image
+    -   \[0\]: Use grayscale image
 
-            -   0: Normal color
+        -   0: Normal color
 
-            -   1: Grayscale
+        -   1: Grayscale
 
-        -   \[1\]: Show left 8 pixels of background
+    -   \[1\]: Show left 8 pixels of background
 
-            -   0: Hide
+        -   0: Hide
 
-            -   1: Show background in leftmost 8 pixels of screen
+        -   1: Show background in leftmost 8 pixels of screen
 
-        -   \[2\]: Show left 8 piexels of sprites
+    -   \[2\]: Show left 8 piexels of sprites
 
-            -   0: Hide
+        -   0: Hide
 
-            -   1: Show sprites in leftmost 8 pixels of screen
+        -   1: Show sprites in leftmost 8 pixels of screen
 
-        -   \[3\]: Render the background
+    -   \[3\]: Render the background
 
-            -   0: Don’t show background
+        -   0: Don’t show background
 
-            -   1: Show background
+        -   1: Show background
 
-        -   \[4\]: Render the sprites
+    -   \[4\]: Render the sprites
 
-            -   0: Don’t show sprites
+        -   0: Don’t show sprites
 
-            -   1: Show sprites
+        -   1: Show sprites
 
-        -   \[5\]: Emphasize red
-        -   \[6\]: Emphasize green
-        -   \[7\]: Emphasize blue
+    -   \[5\]: Emphasize red
 
-    -   **PPUSTATUS\[7:0\] **($2002) READ
+    -   \[6\]: Emphasize green
 
-        -   \[4:0\]: Nothing?
-        -   \[5\]: Set for sprite overflow which is when more than 8 sprites exist in one scanline (Is actually more complicated than this to do a hardware bug)
-        -   \[6\]: Sprite 0 hit. This bit gets set when a non zero part of sprite zero overlaps a non zero background pixel
-        -   \[7\]: Vertical blank status register
+    -   \[7\]: Emphasize blue
 
-            -   0: Not in vertical blank
+-   **PPUSTATUS\[7:0\]** ($2002) READ
 
-            -   1: Currently in vertical blank
+    -   \[4:0\]: Nothing?
 
-    -   **OAMADDR\[7:0\] **($2003) WRITE
+    -   \[5\]: Set for sprite overflow which is when more than 8 sprites exist in one scanline (Is actually more complicated than this to do a hardware bug)
 
-        -   Address of the object attribute memory the program wants to access
+    -   \[6\]: Sprite 0 hit. This bit gets set when a non zero part of sprite zero overlaps a non zero background pixel
 
-    -   **OAMDATA\[7:0\] **($2004) READ/WRITE
+    -   \[7\]: Vertical blank status register
 
-        -   The CPU can read/write this register to read or write to the PPUs object attribute memory. The address should be specified by writing the OAMADDR register beforehand. Each write will increment the address by one, but a read will not modify the address
+        -   0: Not in vertical blank
 
-    -   **PPUSCROLL\[7:0\] **($2005) WRITE
+        -   1: Currently in vertical blank
 
-        -   Tells the PPU what pixel of the nametable selected in PPUCTRL should be in the top left hand corner of the screen
+-   **OAMADDR\[7:0\]** ($2003) WRITE
 
-    -   **PPUADDR\[7:0\] **($2006) WRITE
+    -   Address of the object attribute memory the program wants to access
 
-        -   Address the CPU wants to write to VRAM before writing a read of PPUSTATUS is required and then two bytes are written in first the high byte then the low byte
+-   **OAMDATA\[7:0\]** ($2004) READ/WRITE
 
-    -   **PPUDATA\[7:0\] **($2007) READ/WRITE
+    -   The CPU can read/write this register to read or write to the PPUs object attribute memory. The address should be specified by writing the OAMADDR register beforehand. Each write will increment the address by one, but a read will not modify the address
 
-        -   Writes/Reads data from VRAM for the CPU. The value in PPUADDR is then incremented by the value specified in PPUCTRL
+-   **PPUSCROLL\[7:0\]** ($2005) WRITE
 
-    -   **OAMDMA\[7:0\]** ($4014) WRITE
+    -   Tells the PPU what pixel of the nametable selected in PPUCTRL should be in the top left hand corner of the screen
 
-        -   A write of $XX to this register will result in the CPU memory page at $XX00-$XXFF being written into the PPU object attribute memory
+-   **PPUADDR\[7:0\]** ($2006) WRITE
 
-<span id="anchor-32"></span>PPU Background Renderer
+    -   Address the CPU wants to write to VRAM before writing a read of PPUSTATUS is required and then two bytes are written in first the high byte then the low byte
+
+-   **PPUDATA\[7:0\]** ($2007) READ/WRITE
+
+    -   Writes/Reads data from VRAM for the CPU. The value in PPUADDR is then incremented by the value specified in PPUCTRL
+
+-   **OAMDMA\[7:0\]** ($4014) WRITE
+
+    -   A write of $XX to this register will result in the CPU memory page at $XX00-$XXFF being written into the PPU object attribute memory
+
+PPU Background Renderer
+-----------------------
 
 The background renderer is responsible for rendering the background for each frame that is output to the VGA interface. It does this by prefetching the data for two tiles at the end of the previous scanline. And then begins to continuously fetch tile data for every pixel of the visible frame. This allows the background renderer to produce a steady flow of output pixels despite the fact it takes 8 cycles to fetch 8 pixels of a scanline.
 
-|                          |             |              |                                                                                                                                              |
-|--------------------------|-------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name              | Signal Type | Source/Dest  | Description                                                                                                                                  |
+|--------------------------|-------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | clk                      | input       |              | System clock                                                                                                                                 |
 | rst\_n                   | input       |              | System active low reset                                                                                                                      |
 | bg\_render\_en           | input       | PPU Register | Background render enable                                                                                                                     |
@@ -724,9 +776,10 @@ The background renderer is responsible for rendering the background for each fra
 | loopy\_v\_out\[14:0\]    | output      | PPU Register | The temporary vram address register for vram reads/writes                                                                                    |
 | vram\_addr\_out\[13:0\]  | output      | VRAM         | The VRAM address the sprite renderer wants to read from                                                                                      |
 
-<span id="anchor-33"></span>PPU Background Renderer Diagram
+PPU Background Renderer Diagram
+-------------------------------
 
-<img src="Pictures/10000201000001B900000238739CBB26C276ACCB.png" width="326" height="420" />
+<img src="media/image37.png" alt="Untitled Diagram.png" width="326" height="420" />
 
 **VRAM:** The background renderer reads from two of the three major areas of address space available to the PPU, the pattern tables, and the name tables. First the background renderer needs the name table byte for a given tile to know which tile to draw in the background. Once it has this information is need the pattern to know how to draw the background tile.
 
@@ -734,21 +787,21 @@ The background renderer is responsible for rendering the background for each fra
 
 **Scrolling Register:** The scrolling register is responsible for keeping track of what tile is currently being drawn to the screen.
 
-**Scrolling Update Logic: **Every time the data for a background tile is successfully fetched the scrolling register needs to be updated. Most of the time it is a simple increment, but more care has to be taken when the next tile falls in another name table. This logic allows the scrolling register to correctly update to be able to smoothly jump between name tables while rendering.
+**Scrolling Update Logic:** Every time the data for a background tile is successfully fetched the scrolling register needs to be updated. Most of the time it is a simple increment, but more care has to be taken when the next tile falls in another name table. This logic allows the scrolling register to correctly update to be able to smoothly jump between name tables while rendering.
 
-**Background Renderer State Machine: **The background renderer state machine is responsible for sending the correct control signals to all of the other modules as the background is rendering.
+**Background Renderer State Machine:** The background renderer state machine is responsible for sending the correct control signals to all of the other modules as the background is rendering.
 
 **Background Shift Registers:** These registers shift out the pixel data to be rendered on every clock cycle. They also implement the logic that makes fine one pixel scrolling possible by changing what index of the shift registers is the one being shifted out each cycle.
 
-**Pixel Priority Mux: **Since both the sprite renderer and background renderer output one pixel every clock cycle during the visible part of the frame, there needs to be some logic to pick between the two pixels that are output. The pixel priority mux does this based on the priority of the sprite pixel, and the color of both the sprite pixel and background pixel.
+**Pixel Priority Mux:** Since both the sprite renderer and background renderer output one pixel every clock cycle during the visible part of the frame, there needs to be some logic to pick between the two pixels that are output. The pixel priority mux does this based on the priority of the sprite pixel, and the color of both the sprite pixel and background pixel.
 
-<span id="anchor-34"></span>PPU Sprite Renderer
+PPU Sprite Renderer
+-------------------
 
 The PPU sprite renderer is used to render all of the sprite data for each scanline. The way the hardware was designed it only allows for 64 sprites to kept in object attribute memory at once. There are only 8 spots available to store the sprite data for each scanline so only 8 sprites can be rendered for each scanline. Sprite data in OAM is evaluated for the next scanline while the background renderer is mastering the VRAM bus. When rendering reaches horizontal blank the sprite renderer fetches the pattern data for all of the sprites to be rendered on the next scanline and places the data in the sprite shift registers. The sprite x position is also loaded into a down counter which determines when to make the sprite active and shift out the pattern data on the next scanline.
 
-|                         |             |              |                                                                               |
-|-------------------------|-------------|--------------|-------------------------------------------------------------------------------|
 | Signal name             | Signal Type | Source/Dest  | Description                                                                   |
+|-------------------------|-------------|--------------|-------------------------------------------------------------------------------|
 | clk                     | input       |              | System clock                                                                  |
 | rst\_n                  | input       |              | System active low reset                                                       |
 | spr\_render\_en         | input       | PPU Register | Sprite renderer enable signal                                                 |
@@ -771,13 +824,14 @@ The PPU sprite renderer is used to render all of the sprite data for each scanli
 | spr\_0\_rendering       | output      | Pixel Mux    | Determines if the current sprite that is rendering is sprite 0                |
 | inc\_oam\_addr          | output      | PPU Register | Signals the OAM address in the registers to increment                         |
 
-<span id="anchor-35"></span>PPU Sprite Renderer Diagram
+PPU Sprite Renderer Diagram
+---------------------------
 
-<img src="Pictures/1000020100000259000001B94CA1A2EE2C8FC341.png" width="556" height="408" />
+<img src="media/image33.png" alt="Untitled Diagram.png" width="556" height="408" />
 
 **VRAM:** The sprite renderer need to be able to fetch the sprite pattern data from the character rom. This is why it can request VRAM reads from this region through the PPU Register Interface
 
-**PPU Register Interface:** All background rendering VRAM reads are performed through the PPU register interface. This allows for vram address bus arbitration between the background renderer, sprite renderer, and the cpu.** **
+**PPU Register Interface:** All background rendering VRAM reads are performed through the PPU register interface. This allows for vram address bus arbitration between the background renderer, sprite renderer, and the cpu.
 
 **Object Attribute Memory:** OAM contains all of the data needed to render a sprite to the screen except the pattern data itself. For each sprite OAM holds its x position, y position, horizontal flip, vertical flip, and palette information. In total OAM supports 64 sprites.
 
@@ -785,7 +839,7 @@ The PPU sprite renderer is used to render all of the sprite data for each scanli
 
 **Sprite Shift Registers:** The sprite shift registers hold the sprite pixel data for sprites on the current scanline. When a sprite becomes active its data is shifted out to the pixel priority mux.
 
-**Pixel Priority Mux: **Since both the sprite renderer and background renderer output one pixel every clock cycle during the visible part of the frame, there needs to be some logic to pick between the two pixels that are output. The pixel priority mux does this based on the priority of the sprite pixel, and the color of both the sprite pixel and background pixel.
+**Pixel Priority Mux:** Since both the sprite renderer and background renderer output one pixel every clock cycle during the visible part of the frame, there needs to be some logic to pick between the two pixels that are output. The pixel priority mux does this based on the priority of the sprite pixel, and the color of both the sprite pixel and background pixel.
 
 **Temporary Sprite Data:** The temporary sprite data is where the state machine moves the current sprite being evaluated in OAM to. If the temporary sprite falls on the next scanline its data is moved into a slot in secondary OAM. If it does not the data is discarded.
 
@@ -793,11 +847,11 @@ The PPU sprite renderer is used to render all of the sprite data for each scanli
 
 **Sprite Counter and Priority Registers:** These registers hold the priority information for each sprite in the sprite shift registers. It also holds a down counter for each sprite which is loaded with the sprite's x position. When the counter hits 0 the corresponding sprite becomes active and the sprite data needs to be shifted out to the screen.
 
-<span id="anchor-36"></span>PPU Object Attribute Memory
+PPU Object Attribute Memory
+---------------------------
 
-|                     |             |              |                                                        |
-|---------------------|-------------|--------------|--------------------------------------------------------|
 | Signal name         | Signal Type | Source/Dest  | Description                                            |
+|---------------------|-------------|--------------|--------------------------------------------------------|
 | clk                 | input       |              | System clock                                           |
 | rst\_n              | input       |              | System active low reset                                |
 | oam\_en             | input       | OAM          | Determines if the input data is for a valid read/write |
@@ -807,11 +861,11 @@ The PPU sprite renderer is used to render all of the sprite data for each scanli
 | data\_in\[7:0\]     | input       | OAM          | Data to write to the specified OAM address             |
 | data\_out\[7:0\]    | output      | PPU Register | Data that has been read from OAM                       |
 
-<span id="anchor-37"></span>PPU Palette Memory
+PPU Palette Memory
+------------------
 
-|                      |             |             |                                                            |
-|----------------------|-------------|-------------|------------------------------------------------------------|
 | Signal name          | Signal Type | Source/Dest | Description                                                |
+|----------------------|-------------|-------------|------------------------------------------------------------|
 | clk                  | input       |             | System clock                                               |
 | rst\_n               | input       |             | System active low reset                                    |
 | pal\_addr\[4:0\]     | input       | palette mem | Selects the palette to read/write in the memory            |
@@ -820,13 +874,13 @@ The PPU sprite renderer is used to render all of the sprite data for each scanli
 | palette\_mem\_en     | input       | palette mem | Determines if the palette mem inputs are valid             |
 | color\_out\[7:0\]    | output      | VGA         | Returns the selected palette for a given address on a read |
 
-<span id="anchor-38"></span>VRAM Interface
+VRAM Interface
+--------------
 
 The VRAM interface instantiates an Altera RAM IP core. Each read take 2 cycles one for the input and one for the output
 
-|                        |             |             |                                              |
-|------------------------|-------------|-------------|----------------------------------------------|
 | Signal name            | Signal Type | Source/Dest | Description                                  |
+|------------------------|-------------|-------------|----------------------------------------------|
 | clk                    | input       |             | System clock                                 |
 | rst\_n                 | input       |             | System active low reset                      |
 | vram\_addr\[10:0\]     | input       | PPU         | Address from VRAM to read to or write from   |
@@ -835,15 +889,13 @@ The VRAM interface instantiates an Altera RAM IP core. Each read take 2 cycles o
 | vram\_rw               | input       | PPU         | Selects if the current op is a read or write |
 | vram\_data\_out\[7:0\] | output      | PPU         | The data that was read from VRAM on a read   |
 
-<span id="anchor-39"></span>
-
-<span id="anchor-40"></span>DMA
+DMA
+---
 
 The DMA is used to copy 256 bytes of data from the CPU address space into the OAM (PPU address space). The DMA is 4x faster than it would be to use str and ldr instructions to copy the data. While copying data, the CPU is stalled.
 
-|                |             |             |                                                                                                                                                                                                                                                                                                                    |
-|----------------|-------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Signal name    | Signal Type | Source/Dest | Description                                                                                                                                                                                                                                                                                                        |
+|----------------|-------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | clk            | input       |             | System clock                                                                                                                                                                                                                                                                                                       |
 | rst\_n         | input       |             | System active low reset                                                                                                                                                                                                                                                                                            |
 | oamdma         | input       | PPU         | When written to, the DMA will begin copying data to the OAM. If the value written here is XX then the data that will be copied begins at the address XX00 in the CPU RAM and goes until the address XXFF. Data will be copied to the OAM starting at the OAM address specified in the OAMADDR register of the OAM. |
@@ -857,41 +909,39 @@ The DMA is used to copy 256 bytes of data from the CPU address space into the OA
 | dma\_addr      | input       | APU         | Address for DMA to read from \*\* CURRENTLY NOT USED \*\*                                                                                                                                                                                                                                                          |
 | dma\_data      | output      | APU         | Data from DMA to apu memory \*\* CURRENTLY NOT USED \*\*                                                                                                                                                                                                                                                           |
 
-<span id="anchor-41"></span>PPU Testbench
+PPU Testbench
+-------------
 
 In a single frame the PPU outputs 61,440 pixels. Obviously this amount of information would be incredibly difficult for a human to verify as correct by looking at a simulation waveform. This is what drove me to create a testbench capable of rendering full PPU frames to an image. This allowed the process of debugging the PPU to proceed at a much faster rate than if I used waveforms alone. Essentially how the test bench works is the testbench sets the initial PPU state, it lets the PPU render a frame, and then the testbench receives the data for each pixel and generates a PPM file. The testbench can render multiple frames in a row, so the tester can see how the frame output changes as the PPU state changes.
 
-<img src="Pictures/1000020100000209000000D3E81BB7CE165227E0.png" width="409" height="165" />
+<img src="media/image34.png" alt="Untitled Diagram.png" width="409" height="165" />
 
-<img src="Pictures/10000201000001F5000001370BA20B441E3BBFC5.png" width="388" height="240" />
+<img src="media/image36.png" alt="Untitled Diagram.png" width="388" height="240" />
 
-<span id="anchor-42"></span>PPU Testbench PPM file format
+PPU Testbench PPM file format
+-----------------------------
 
 The PPM image format is one of the easiest to understand image formats available. This is mostly because of how it is a completely human readable format. A PPM file simply consists of a header, and then pixel data. The header consists of the text “P3” on the first line, followed by the image width and height on the next line, then a max value for each of the rgb components of a pixel on the final line of the header. After the header it is just width \* height rgb colors in row major order.
 
-<span id="anchor-43"></span>
+PPU Testbench Example Renderings
+--------------------------------
 
-<span id="anchor-44"></span>
+<img src="media/image23.png" alt="test (1).png" width="197" height="186" /><img src="media/image25.png" alt="test (2).png" width="200" height="187" /><img src="media/image24.png" alt="test (3).png" width="199" height="189" /><img src="media/image38.png" alt="test (4).png" width="202" height="187" /><img src="media/image42.png" alt="test (5).png" width="201" height="187" /><img src="media/image26.png" alt="test (10).png" width="198" height="186" />
 
-<span id="anchor-45"></span>PPU Testbench Example Renderings
-
-<img src="Pictures/1000000000000100000000F0136DCEC05484C20F.png" width="197" height="186" /><img src="Pictures/1000000000000100000000F07DA6BAD09A95E73A.png" width="200" height="187" /><img src="Pictures/1000000000000100000000F0A5C2D4ECAFF7499E.png" width="199" height="189" /><img src="Pictures/1000000000000100000000F0180E53805B6C2B7D.png" width="202" height="187" /><img src="Pictures/1000000000000100000000F0B550AA84D193B9D3.png" width="201" height="187" /><img src="Pictures/1000000000000100000000F04720F6A45D7021C9.png" width="198" height="186" />
-
-1.  <span id="anchor-46"></span>Memory Maps
+Memory Maps
+===========
 
 Cartridges are a Read-Only Memory that contains necessary data to run games. However, it is possible that in some cases that a cartridge holds more data than the CPU can address to. In this case, memory mapper comes into play and changes the mapping as needed so that one address can point to multiple locations in a cartridge. For our case, the end goal was to get the game Super Mario Bros. running on our FPGA. This game does not use a memory mapper, so we did not work on any memory mappers. In the future, we might add support for the other memory mapping systems so that we can play other games.
 
 These were two ip catalog ROM blocks that are created using MIF files for Super Mario Bros. They contained the information for the CPU and PPU RAM and VRAM respectively.
 
-<span id="anchor-47"></span>
-
-<span id="anchor-48"></span>PPU ROM Memory Map
+PPU ROM Memory Map
+------------------
 
 This table shows how the PPU’s memory is laid out. The Registers are explained in greater detail in the Architecture Document.
 
-|                 |                         |
-|-----------------|-------------------------|
 | Address Range   | Description             |
+|-----------------|-------------------------|
 | 0x0000 - 0x0FFF | Pattern Table 0         |
 | 0x1000 - 0x1FFF | Pattern Table 1         |
 | 0x2000 - 0x23BF | Name Table 0            |
@@ -908,13 +958,13 @@ This table shows how the PPU’s memory is laid out. The Registers are explained
 | 0x3F20 - 0x3FFF | Mirrors 0x3F00 - 0x3F1F |
 | 0x4000 - 0xFFFF | Mirrors 0x0000 - 0x3FFF |
 
-<span id="anchor-49"></span>CPU ROM Memory Map
+CPU ROM Memory Map
+------------------
 
 This table explains how the CPU’s memory is laid out. The Registers are explained in greater detail in the Architecture document.
 
-|                 |                         |
-|-----------------|-------------------------|
 | Address Range   | Description             |
+|-----------------|-------------------------|
 | 0x0000 - 0x00FF | Zero Page               |
 | 0x0100 - 0x1FF  | Stack                   |
 | 0x0200 - 0x07FF | RAM                     |
@@ -927,86 +977,85 @@ This table explains how the CPU’s memory is laid out. The Registers are explai
 | 0x8000 - 0xBFFF | Program ROM Lower Bank  |
 | 0xC000 - 0xFFFF | Program ROM Upper Bank  |
 
-<span id="anchor-50"></span>Memory Mappers Interface
+Memory Mappers Interface
+------------------------
 
-|             |             |             |                         |
-|-------------|-------------|-------------|-------------------------|
 | Signal name | Signal Type | Source/Dest | Description             |
+|-------------|-------------|-------------|-------------------------|
 | clk         | input       |             | System clock            |
 | rst\_n      | input       |             | System active low reset |
 | rd          | input       | CPU/PPU     | Read request            |
 | addr        | input       | CPU/PPU     | Address to read from    |
 | data        | output      | CPU/PPU     | Data from the address   |
 
-<span id="anchor-51"></span>
-
-1.  <span id="anchor-52"></span>APU
+APU
+===
 
 Due to limitations of our FPGA design board (no D2A converter) and time constraints, our group did not implement the APU. Instead, we created the register interface for the APU, so that the CPU could still read and write from the registers. The following section is provided for reference only.
 
 The NES included an Audio Processing Unit (APU) to control all sound output. The APU contains five audio channels: two pulse wave modulation channels, a triangle wave channel, a noise channel (for random audio), and a delta modulation channel. Each channel is mapped to registers in the CPU’s address space and each channel runs independently of the others. The outputs of all five channels are then combined using a non-linear mixing scheme. The APU also has a dedicated APU Status register. A write to this register can enable/disable any of the five channels. A read to this register can tell you if each channel still has a positive count on their respective timers. In addition, a read to this register will reveal any DMC or frame interrupts.
 
-<span id="anchor-53"></span> APU Registers
+ APU Registers
+--------------
 
-|               |
-|---------------|
 | Registers     |
-| $4000         |
-| $4001         |
-| $4002         |
-| $4003         |
-| $4004         |
-| $4005         |
-| $4006         |
-| $4007         |
-| $4008         |
-| $4009         |
-| $400A         |
-| $400B         |
-| $400C         |
-| $400D         |
-| $400E         |
-| $400F         |
-| $4010         |
-| $4011         |
-| $4012         |
-| $4013         |
-| $4015 (write) |
-| $4015 (read)  |
-| $4017 (write) |
+|---------------|----------------------------|-----------|-----------------------------------------------------------------------------------------------------------|
+| $4000         | First pulse wave           | DDLC VVVV | Duty, Envelope Loop, Constant Volume, Volume                                                              |
+| $4001         | First pulse wave           | EPPP NSSS | Enabled, Period, Negate, Shift                                                                            |
+| $4002         | First pulse wave           | TTTT TTTT | Timer low                                                                                                 |
+| $4003         | First pulse wave           | LLLL LTTT | Length counter load, Timer high                                                                           |
+| $4004         | Second pulse wave          | DDLC VVVV | Duty, Envelope Loop, Constant Volume, Volume                                                              |
+| $4005         | Second pulse wave          | EPPP NSSS | Enabled, Period, Negate, Shift                                                                            |
+| $4006         | Second pulse wave          | TTTT TTTT | Timer low                                                                                                 |
+| $4007         | Second pulse wave          | LLLL LTTT | Length counter load, Timer high                                                                           |
+| $4008         | Triangle wave              | CRRR RRRR | Length counter control, linear count load                                                                 |
+| $4009         | Triangle wave              |           | Unused                                                                                                    |
+| $400A         | Triangle wave              | TTTT TTTT | Timer low                                                                                                 |
+| $400B         | Triangle wave              | LLLL LTTT | Length counter load, Timer high                                                                           |
+| $400C         | Noise Channel              | --LC VVVV | Envelope Loop, Constant Volume, Volume                                                                    |
+| $400D         | Noise Channel              |           | Unused                                                                                                    |
+| $400E         | Noise Channel              | L--- PPPP | Loop Noise, Noise Period                                                                                  |
+| $400F         | Noise Channel              | LLLL L--- | Length counter load                                                                                       |
+| $4010         | Delta modulation channel   | IL-- FFFF | IRQ enable, Loop, Frequency                                                                               |
+| $4011         | Delta modulation channel   | -LLL LLLL | Load counter                                                                                              |
+| $4012         | Delta modulation channel   | AAAA AAAA | Sample Address                                                                                            |
+| $4013         | Delta modulation channel   | LLLL LLLL | Sample Length                                                                                             |
+| $4015 (write) | APU Status Register Writes | ---D NT21 | Enable DMC, Enable Noise, Enable Triangle, Enable Pulse 2/1                                               |
+| $4015 (read)  | APU Status Register Read   | IF-D NT21 | DMC Interrupt, Frame Interrupt, DMC Active, Length Counter &gt; 0 for Noise, Triangle, and Pulse Channels |
+| $4017 (write) | APU Frame Counter          | MI-- ---- | Mode (0 = 4 step, 1 = 5 step), IRQ inhibit flag                                                           |
 
-<span id="anchor-54"></span>
-
-1.  <span id="anchor-55"></span>Controllers (SPART)
+Controllers (SPART)
+===================
 
 The controller module allows users to provide input to the FPGA. We opted to create a controller simulator program instead of using an actual NES joypad. This decision was made because the NES controllers used a proprietary port and because the available USB controllers lacked specification sheets. The simulator program communicates with the FPGA using the SPART interface, which is similar to UART. Our SPART module used 8 data bits, no parity, and 1 stop bit for serial communication. All data was received automatically into an 8 bit buffer by the SPART module at 2400 baud. In addition to the SPART module, we also needed a controller driver to allow the CPU to interface with the controllers. The controllers are memory mapped to $4016 and $4017 for CPU to read.
 
 When writing high to address $4016 bit 0, the controllers are continuously loaded with the states of each button. Once address $4016 bit 0 is cleared, the data from the controllers can be read by reading from address $4016 for player 1 or $4017 for player 2. The data will be read in serially on bit 0. The first read will return the state of button A, then B, Select, Start, Up, Down, Left, Right. It will read 1 if the button is pressed and 0 otherwise. Any read after clearing $4016 bit 0 and after reading the first 8 button values, will be a 1. If the CPU reads when before clearing $4016, the state of button A with be repeatedly returned.
 
-<span id="anchor-56"></span>Debug Modification
+Debug Modification
+------------------
 
 In order to provide an easy way to debug our top level design, we modified the controller to send an entire ram block out over SPART when it receives the send\_states signal. This later allowed us to record the PC, IR, A, X, Y, flags, and SP of the CPU into a RAM block every CPU clock cycle and print this out onto a terminal console when we reached a specific PC.
 
-<span id="anchor-57"></span>Controller Registers
+Controller Registers
+--------------------
 
-|               |
-|---------------|
 | Registers     |
-| $4016 (write) |
-| $4016 (read)  |
-| $4017 (read)  |
+|---------------|-------------------|-----------|---------------------------------------------------------------------------------------------|
+| $4016 (write) | Controller Update | ---- ---C | Button states of both controllers are loaded                                                |
+| $4016 (read)  | Controller 1 Read | ---- ---C | Reads button states of controller 1 in the order A, B, Start, Select, Up, Down, Left, Right |
+| $4017 (read)  | Controller 2 Read | ---- ---C | Reads button states of controller 2 in the order A, B, Start, Select, Up, Down, Left, Right |
 
-<span id="anchor-58"></span>Controllers Wrapper
+Controllers Wrapper
+-------------------
 
 The controllers wrapper acts as the top level interface for the controllers. It instantiates two Controller modules and connects each one to separate TxD RxD lines. In addition, the Controllers wrapper handles passing the cs, addr, and rw lines into the controllers correctly. Both controllers receive an address of 0 for controller writes, while controller 1 will receive address 0 for reads and controller 2 will receive address 1.
 
-<span id="anchor-59"></span>Controller Wrapper Diagram
+### Controller Wrapper Diagram
 
-<span id="anchor-60"></span>Controller Wrapper Interface
+### Controller Wrapper Interface
 
-|                |             |             |                                                                       |
-|----------------|-------------|-------------|-----------------------------------------------------------------------|
 | Signal name    | Signal Type | Source/Dest | Description                                                           |
+|----------------|-------------|-------------|-----------------------------------------------------------------------|
 | clk            | input       |             | System clock                                                          |
 | rst\_n         | input       |             | System active low reset                                               |
 | TxD1           | output      | UART        | Transmit data line for controller 1                                   |
@@ -1023,17 +1072,17 @@ The controllers wrapper acts as the top level interface for the controllers. It 
 | rd\_addr       | output      | CPU RAM     | The address the controller is writing out to SPART                    |
 | rd             | output      | CPU RAM     | High when controller is reading from CPU RAM                          |
 
-<span id="anchor-61"></span>Controller
+Controller
+----------
 
 The controller module instantiates the Driver and SPART module’s.
 
-<span id="anchor-62"></span>Controller Diagram
+### Controller Diagram
 
-<span id="anchor-63"></span>Controller Interface
+### Controller Interface
 
-|                |             |             |                                                                       |
-|----------------|-------------|-------------|-----------------------------------------------------------------------|
 | Signal name    | Signal Type | Source/Dest | Description                                                           |
+|----------------|-------------|-------------|-----------------------------------------------------------------------|
 | clk            | input       |             | System clock                                                          |
 | rst\_n         | input       |             | System active low reset                                               |
 | TxD            | output      | UART        | Transmit data line                                                    |
@@ -1048,37 +1097,39 @@ The controller module instantiates the Driver and SPART module’s.
 | rd\_addr       | output      | CPU RAM     | The address the controller is writing out to SPART                    |
 | rd             | output      | CPU RAM     | High when controller is reading from CPU RAM                          |
 
-<span id="anchor-64"></span>Special Purpose Asynchronous Receiver and Transmitter (SPART)
+Special Purpose Asynchronous Receiver and Transmitter (SPART)
+-------------------------------------------------------------
 
 The SPART Module is used to receive serial data. The SPART and driver share many interconnections in order to control the reception and transmission of data. On the left, the SPART interfaces to an 8- bit, 3-state bidirectional bus, DATABUS\[7:0\]. This bus is used to transfer data and control information between the driver and the SPART. In addition, there is a 2-bit address bus, IOADDR\[1:0\] which is used to select the particular register that interacts with the DATABUS during an I/O operation. The IOR/W signal determines the direction of data transfer between the driver and SPART. For a Read (IOR/W=1), data is transferred from the SPART to the driver and for a Write (IOR/W=0), data is transferred from the driver to the SPART. IOCS and IOR/W are crucial signals in properly controlling the three-state buffer on DATABUS within the SPART. Receive Data Available (RDA), is a status signal which indicates that a byte of data has been received and is ready to be read from the SPART to the Processor. When the read operation is performed, RDA is reset. Transmit Buffer Ready (TBR) is a status signal which indicates that the transmit buffer in the SPART is ready to accept a byte for transmission. When a write operation is performed and the SPART is not ready for more transmission data, TBR is reset. The SPART is fully synchronous with the clock signal CLK; this implies that transfers between the driver and SPART can be controlled by applying IOCS, IOR/W, IOADDR, and DATABUS (in the case of a write operation) for a single clock cycle and capturing the transferred data on the next positive clock edge. The received data on RxD, however, is asynchronous with respect to CLK. Also, the serial I/O port on the workstation which receives the transmitted data from TxD has no access to CLK. This interface thus constitutes the “A” for “Asynchronous” in SPART and requires an understanding of RS-232 signal timing and (re)synchronization.
 
 SPART Diagram & Interface
 
-<img src="Pictures/10000201000006E00000045AFD848F385DB1970A.png" width="491" height="307" /><span id="anchor-65"></span>
+### <img src="media/image32.png" width="491" height="308" />
 
-<span id="anchor-66"></span>Controller Driver
+Controller Driver
+-----------------
 
 The controller driver is tasked with reloading the controller button states from the SPART receiver buffer when address $4016 (or $0 from controller’s point of view) is set. In addition, the driver must grab the CPU databus on a read and place a button value on bit 0. On the first read, the button state of value A is placed on the databus, followed by B, Select, Start, Up, Down, Left, Right. The value will be 1 for pressed and 0 for not pressed. After reading the first 8 buttons, the driver will output a 0 on the databus. Lastly, the controller driver can also be used to control the SPART module to output to the UART port of the computer.
 
-<span id="anchor-67"></span>Controller Driver State Machine
+### Controller Driver State Machine
 
-<span id="anchor-68"></span>
-
-1.  <span id="anchor-69"></span>VGA
+VGA
+===
 
 The VGA interface consists of sending the pixel data to the screen one row at a time from left to right. In between each row it requires a special signal called horizontal sync (hsync) to be asserted at a specific time when only black pixels are being sent, called the blanking interval. This happens until the bottom of the screen is reached when another blanking interval begins where the interface is only sending black pixels, but instead of hsync being asserted the vertical sync signal is asserted.
 
-<img src="Pictures/100002010000015E0000010A33D2DEA9ECB12BD1.png" width="349" height="266" />
+> <img src="media/image41.png" width="350" height="266" />
 
 The main difficulty with the VGA interface will be designing a system to take the PPU output (a 256x240 image) and converting it into a native resolution of 640x480 or 1280x960. This was done by adding two RAM blocks to buffer the data.
 
-<span id="anchor-70"></span>VGA Diagram
+VGA Diagram
+-----------
 
-<span id="anchor-71"></span>VGA Interface
+VGA Interface
+-------------
 
-|                    |             |             |                                             |
-|--------------------|-------------|-------------|---------------------------------------------|
 | Signal name        | Signal Type | Source/Dest | Description                                 |
+|--------------------|-------------|-------------|---------------------------------------------|
 | clk                | input       |             | System clock                                |
 | rst\_n             | input       |             | System active low reset                     |
 | V\_BLANK\_N        | output      |             | Syncing each pixel                          |
@@ -1095,40 +1146,38 @@ The main difficulty with the VGA interface will be designing a system to take th
 | frame\_end         | input       | PPU         | high at the end of a PPU frame              |
 | frame\_start       | input       | PPU         | high at start of PPU frame                  |
 
-<span id="anchor-72"></span>VGA Clock Gen
+VGA Clock Gen
+-------------
 
 This module takes in a 50MHz system clock and creates a 25.175MHz clock, which is the standard VGA clock speed.
 
-|             |             |             |                                |
-|-------------|-------------|-------------|--------------------------------|
 | Signal name | Signal Type | Source/Dest | Description                    |
+|-------------|-------------|-------------|--------------------------------|
 | clk         | input       |             | System clock                   |
 | rst\_n      | input       |             | System active low reset        |
 | VGA\_CLK    | output      | VGA         | Clock synced to VGA timing     |
 | locked      | output      |             | Locks VGA until clock is ready |
 
-<span id="anchor-73"></span>VGA Timing Gen
+VGA Timing Gen
+--------------
 
 This block is responsible for generating the timing signals for VGA with a screen resolution of 480x640. This includes the horizontal and vertical sync signals as well as the blank signal for each pixel.
 
-|             |             |                 |                         |
-|-------------|-------------|-----------------|-------------------------|
 | Signal name | Signal Type | Source/Dest     | Description             |
+|-------------|-------------|-----------------|-------------------------|
 | VGA\_CLK    | input       | Clock Gen       | vga\_clk                |
 | rst\_n      | input       |                 | System active low reset |
 | V\_BLANK\_N | output      | VGA, Ram Reader | Syncing each pixel      |
 | VGA\_HS     | output      | VGA             | Horizontal line sync    |
 | VGA\_VS     | output      | VGA             | Vertical line sync      |
 
-<span id="anchor-74"></span>
-
-<span id="anchor-75"></span>VGA Display Plane
+VGA Display Plane
+-----------------
 
 The PPU will output sprite and background pixels to the VGA module, as well as enables for each. The display plane will update the RAM block at the appropriate address with the pixel data on every PPU clock cycle when the PPU is rendering.
 
-|                    |             |             |                                                  |
-|--------------------|-------------|-------------|--------------------------------------------------|
 | Signal name        | Signal Type | Source/Dest | Description                                      |
+|--------------------|-------------|-------------|--------------------------------------------------|
 | clk                | input       |             | System clock                                     |
 | rst\_n             | input       |             | System active low reset                          |
 | ppu\_clock         | input       | PPU         | Clock speed that the pixels from the PPU come in |
@@ -1139,15 +1188,13 @@ The PPU will output sprite and background pixels to the VGA module, as well as e
 | rendering          | input       | PPU         | high when PPU is rendering                       |
 | frame\_start       | input       | PPU         | high at start of PPU frame                       |
 
-<span id="anchor-76"></span>
-
-<span id="anchor-77"></span>VGA RAM Wrapper
+VGA RAM Wrapper
+---------------
 
 This module instantiates two 2-port RAM blocks and using control signals, it will have the PPU write to a specific RAM block, while the VGA reads from another RAM block. The goal of this module was to make sure that the PPU writes never overlap the VGA reads, because the PPU runs at a faster clock rate.
 
-|                  |             |               |                                |
-|------------------|-------------|---------------|--------------------------------|
 | Signal name      | Signal Type | Source/Dest   | Description                    |
+|------------------|-------------|---------------|--------------------------------|
 | clk              | input       |               |                                |
 | rst\_n           | input       |               | System active low reset        |
 | wr\_address      | input       | Display Plane | Address to write to            |
@@ -1159,15 +1206,13 @@ This module instantiates two 2-port RAM blocks and using control signals, it wil
 | ppu\_frame\_end  | input       | PPU           | high at the end of a PPU frame |
 | vga\_frame\_end  | input       | VGA           | high at end of VGA frame       |
 
-<span id="anchor-78"></span>
-
-<span id="anchor-79"></span>VGA RAM Reader
+VGA RAM Reader
+--------------
 
 The RAM Reader is responsible for reading data from the correct address in the RAM block and outputting it as an RGB signal to the VGA. It will update the RGB signals every time the blank signal goes high. The NES supported a 256x240 image, which we will be converting to a 640x480 image. This means that the 256x240 image will be multiplied by 2, resulting in a 512x480 image. The remaining 128 pixels on the horizontal line will be filled with black pixels by this block. Lastly, this block will take use the pixel data from the PPU and the NES Palette RGB colors, to output the correct colors to the VGA.
 
-|                  |             |             |                                                      |
-|------------------|-------------|-------------|------------------------------------------------------|
 | Signal name      | Signal Type | Source/Dest | Description                                          |
+|------------------|-------------|-------------|------------------------------------------------------|
 | clk              | input       |             |                                                      |
 | rst\_n           | input       |             | System active low reset                              |
 | rd\_req          | output      | RAM         | Read data out from RAM                               |
@@ -1178,36 +1223,34 @@ The RAM Reader is responsible for reading data from the correct address in the R
 | VGA\_B\[7:0\]    | output      |             | VGA Blue pixel value                                 |
 | VGA\_Blnk\[7:0\] | input       | Time Gen    | VGA Blank signal (high when we write each new pixel) |
 
-<span id="anchor-80"></span>
+Software
+========
 
-1.  <span id="anchor-81"></span>Software
-
-<span id="anchor-82"></span>Controller Simulator
+Controller Simulator
+--------------------
 
 In order to play games on the NES and provide input to our FPGA, we will have a java program that uses the JSSC (Java Simple Serial Connector) library to read and write data serially using the SPART interface. The program will provides a GUI that was created using the JFrame library. This GUI will respond to mouse clicks as well as key presses when the window is in focus. When a button state on the simulator is changed, it will trigger the program to send serial data. When data is detected on the rx line, the simulator will read in the data (every time there is 8 bytes in the buffer) and will output this data as a CPU trace to an output file. Instructions to invoke this program can be found in the README file of our github directory.
 
-<span id="anchor-83"></span>Controller Simulator State Machine
+### Controller Simulator State Machine 
 
-<span id="anchor-84"></span>Controller Simulator Output Packet Format
+### Controller Simulator Output Packet Format
 
-|                 |             |               |                                                                                                          |
-|-----------------|-------------|---------------|----------------------------------------------------------------------------------------------------------|
 | Packet name     | Packet type | Packet Format | Description                                                                                              |
+|-----------------|-------------|---------------|----------------------------------------------------------------------------------------------------------|
 | Controller Data | output      | ABST-UDLR     | This packet indicates which buttons are being pressed. A 1 indicates pressed, a 0 indicates not pressed. 
                                                                                                               
     (A) A button, (B) B button, (S) Select button, (T) Start button, (U) Up, (D) Down, (L) Left, (R) Right    |
 
-<span id="anchor-85"></span>Controller Simulator GUI and Button Map
+### Controller Simulator GUI and Button Map
 
 The NES controller had a total of 8 buttons, as shown below.
 
-<img src="Pictures/10000201000007D000000338AE73E97433BB344C.png" width="624" height="257" />
+<img src="media/image10.png" width="624" height="257" />
 
 The NES buttons will be mapped to specific keys on the keyboard. The keyboard information will be obtained using KeyListeners in the java.awt.\* library. The following table indicates how the buttons are mapped and their function in Super Mario Bros.
 
-|                 |                |                                       |
-|-----------------|----------------|---------------------------------------|
 | Keyboard button | NES Equivalent | Super Mario Bros. Function            |
+|-----------------|----------------|---------------------------------------|
 | X Key           | A Button       | Jump (Hold to jump higher)            |
 | Z Key           | B Button       | Sprint (Hold and use arrow keys)      |
 | Tab Key         | Select Button  | Pause Game                            |
@@ -1217,15 +1260,15 @@ The NES buttons will be mapped to specific keys on the keyboard. The keyboard in
 | Left Arrow      | Left on D-Pad  | Move left                             |
 | Right Arrow     | Right on D-Pad | Move right                            |
 
-<span id="anchor-86"></span>Assembler
+Assembler
+---------
 
 We will include an assembler that allows custom software to be developed for our console. This assembler will convert assembly code to machine code for the NES on .mif files that we can load into our FPGA. It will include support for labels and commenting.The ISA is specified in the table below:
 
-<span id="anchor-87"></span>Opcode Table
+### Opcode Table
 
-|            |              |         |            |              |         |            |              |         |
-|------------|--------------|---------|------------|--------------|---------|------------|--------------|---------|
 | **Opcode** | **Mode**     | **Hex** | **Opcode** | **Mode**     | **Hex** | **Opcode** | **Mode**     | **Hex** |
+|------------|--------------|---------|------------|--------------|---------|------------|--------------|---------|
 | ADC        | Immediate    | 69      | DEC        | Zero Page    | C6      | ORA        | Absolute     | 0D      |
 | ADC        | Zero Page    | 65      | DEC        | Zero Page, X | D6      | ORA        | Absolute, X  | 1D      |
 | ADC        | Zero Page, X | 75      | DEC        | Absolute     | CE      | ORA        | Absolute, Y  | 19      |
@@ -1278,129 +1321,145 @@ We will include an assembler that allows custom software to be developed for our
 | CPY        | Absolute     | CC      | ORA        | Zero Page, X | 15      | TXS        | Implied      | 9A      |
 |            |              |         |            |              |         | TYA        | Implied      | 98      |
 
-<span id="anchor-88"></span>NES Assembly Formats
+### NES Assembly Formats
 
 Our assembler will allow the following input format, each instruction/label will be on its own line. In addition unlimited whitespace is allowed:
 
-|                              |
-|------------------------------|
 | Instruction Formats          |
-| Instruction Type             |
-| Constant                     |
-| Label                        |
-| Comment                      |
-| CPU Start                    |
-| Accumulator                  |
-| Implied                      |
-| Immediate                    |
-| Absolute                     |
-| Zero Page                    |
-| Relative                     |
-| Absolute Index               |
-| Zero Page Index              |
-| Zero Page X Indexed Indirect |
-| Zero Page Y Indexed Indirect |
-| Data instruction             |
+|------------------------------|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Instruction Type             | Format                                             | Description                                                                                                                                                                            |
+| Constant                     | Constant\_Name = &lt;Constant Value&gt;            | Must be declared before CPU\_Start                                                                                                                                                     |
+| Label                        | Label\_Name:                                       | Cannot be the same as an opcode name. Allows reference from branch opcodes.                                                                                                            |
+| Comment                      | ; Comment goes here                                | Anything after the ; will be ignored                                                                                                                                                   |
+| CPU Start                    | \_CPU:                                             | Signals the start of CPU memory                                                                                                                                                        |
+| Accumulator                  | &lt;OPCODE&gt;                                     | Accumulator is value affected by Opcode                                                                                                                                                |
+| Implied                      | &lt;OPCODE&gt;                                     | Operands implied by opcode. ie. TXA has X as source and Accumulator as destination                                                                                                     |
+| Immediate                    | &lt;OPCODE&gt; \#&lt;Immediate&gt;                 | The decimal number will be converted to binary and used as operand                                                                                                                     |
+| Absolute                     | &lt;OPCODE&gt; $&lt;ADDR/LABEL&gt;                 | The byte at the specified address is used as operand                                                                                                                                   |
+| Zero Page                    | &lt;OPCODE&gt; $&lt;BYTE OFFSET&gt;                | The byte at address $00XX is used as operand.                                                                                                                                          |
+| Relative                     | &lt;OPCODE&gt; $&lt;BYTE OFFSET/LABEL&gt;          | The byte at address PC +/- Offset is used as operand. Offset can range -128 to +127                                                                                                    |
+| Absolute Index               | &lt;OPCODE&gt; $&lt;ADDR/LABEL&gt;,&lt;X or Y&gt;  | Absolute but value in register added to address.                                                                                                                                       |
+| Zero Page Index              | &lt;OPCODE&gt; $&lt;BYTE OFFSET&gt;,&lt;X or Y&gt; | Zero page but value in register added to offset.                                                                                                                                       |
+| Zero Page X Indexed Indirect | &lt;OPCODE&gt; ($&lt;BYTE OFFSET&gt;,X)            | Value in X added to offset. Address in $00XX (where XX is new offset) is used as the address for the operand.                                                                          |
+| Zero Page Y Indexed Indirect | &lt;OPCODE&gt; ($&lt;BYTE OFFSET&gt;),Y            | The address in $00XX, where XX is byte offset, is added to the value in Y and is used as the address for the operand.                                                                  |
+| Data instruction             | &lt;.DB or .DW&gt; &lt;data values&gt;             | If .db then the data values must be bytes, if .dw then the data values must be 2 bytes. Multiple comma separated data values can be include for each instruction. Constants are valid. |
 
-|                                |
-|--------------------------------|
 | Number Formats                 |
-| Immediate Decimal (Signed)     |
-| Immediate Hexadecimal (Signed) |
-| Immediate Binary (Signed)      |
-| Address/Offset Hex             |
-| Address/Offset Binary          |
-| Offset Decimal (Relative only) |
-| Constant first byte            |
-| Constant second byte           |
-| Constant                       |
-| Label                          |
+|--------------------------------|-----------------------|---------------------------------------------------------------|
+| Immediate Decimal (Signed)     | \#&lt;(-)DDD&gt;      | Max 127, Min -128                                             |
+| Immediate Hexadecimal (Signed) | \#$&lt;HH&gt;         |                                                               |
+| Immediate Binary (Signed)      | \#%&lt;BBBB.BBBB&gt;  | Allows ‘.’ in between bits                                    |
+| Address/Offset Hex             | $&lt;Addr/Offset&gt;  | 8 bits offset, 16 bits address                                |
+| Address/Offset Binary          | $%&lt;Addr/Offset&gt; | 8 bits offset, 16 bits address                                |
+| Offset Decimal (Relative only) | \#&lt;(-)DDD&gt;      | Relative instructions can’t be Immediate, so this is allowed. 
+                                                                  
+   Max 127, Min -128                                              |
+| Constant first byte            | &lt;Constant\_Name    |                                                               |
+| Constant second byte           | &gt;Constant\_Name    |                                                               |
+| Constant                       | Constant\_Name        |                                                               |
+| Label                          | Label\_Name           | Not valid for data instructions                               |
 
-<span id="anchor-89"></span>
+### 
 
-<span id="anchor-90"></span>Invoking Assembler
+### Invoking Assembler
 
-|                                                                                |                                                                                                |
-|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
 | Usage                                                                          | Description                                                                                    |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
 | java NESAssemble &lt;input file&gt; &lt;cpuouput.mif&gt; &lt;ppuoutput.mif&gt; | Reads the input file and outputs the CPU ROM to cpuoutput.mif and the PPU ROM to ppuoutput.mif |
 
-<span id="anchor-91"></span> iNES ROM Converter
+ iNES ROM Converter
+-------------------
 
 Most NES games are currently available online in files of the iNES format, a header format used by most software NES emulators. Our NES will not support this file format. Instead, we will write a java program that takes an iNES file as input and outputs two .mif files that contain the CPU RAM and the PPU VRAM. These files will be used to instantiate the ROM’s of the CPU and PPU in our FPGA.
 
-|                                                                            |                                                                                                 |
-|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | Usage                                                                      | Description                                                                                     |
+|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | java NEStoMIF &lt;input.nes&gt; &lt;cpuouput.mif&gt; &lt;ppuoutput.mif&gt; | Reads the input file and outputs the CPU RAM to cpuoutput.mif and the PPU VRAM to ppuoutput.mif |
 
-<span id="anchor-92"></span> Tic Tac Toe
+ Tic Tac Toe
+------------
 
 We also implemented Tic Tac Toe in assembly for initial integration tests. We bundled it into a NES ROM, and thus can run it on existing emulators as well as our own hardware.
 
-1.  <span id="anchor-93"></span>Testing & Debug
+Testing & Debug
+===============
 
 Our debugging process had multiple steps
 
-<span id="anchor-94"></span>Simulation
+Simulation
+----------
 
 For basic sanity check, we simulated each module independently to make sure the signals behave as expected.
 
-<span id="anchor-95"></span>Test
+Test
+----
 
 For detailed check, we wrote an automated testbench to confirm the functionality. The CPU test suite was from [*https://github.com/Klaus2m5/*](https://github.com/Klaus2m5/) and we modified the test suite to run on the fceux NES emulator.
 
-<span id="anchor-96"></span>Integrated Simulation
+Integrated Simulation
+---------------------
 
 After integration, we simulated the whole system with the ROM installed. We were able to get a detailed information at each cycle but the simulation took too long. It took about 30 minutes to simulate CPU operation for one second. Thus we designed a debug and trace module in hardware that could output CPU traces during actual gameplay..
 
-<span id="anchor-97"></span>Tracer
+Tracer
+------
 
 We added additional code in Controller so that the Controller can store information at every cycle and dump them back to the serial console under some condition. At first, we used a button as the trigger, but after we analyzed the exact problem, we used a conditional statement(for e.g. when PC reached a certain address) to trigger the dump. When the condition was met, the Controller would stall the CPU and start dumping what the CPU has been doing, in the opposite order of execution. The technique was extremely useful because we came to the conclusion that there must be a design defect when Mario crashed, such as using don’t cares or high impedance. After we corrected the defect, we were able to run Mario.
 
-1.  <span id="anchor-98"></span>Results
+Results
+=======
 
 We were able to get NES working, thanks to our rigorous verification process, and onboard debug methodology. Some of the games we got working include Super Mario Bros, Galaga, Tennis, Golf, Donkey Kong, Ms Pacman, Defender II, Pinball, and Othello.
 
-1.  <span id="anchor-99"></span>Possible Improvements
+Possible Improvements
+=====================
 
 -   Create a working audio processing unit
+
 -   More advanced memory mapper support
+
 -   Better image upscaling such as hqx
+
 -   Support for actual NES game carts
+
 -   HDMI
+
 -   VGA buffer instead of two RAM blocks to save space
 
-1.  <span id="anchor-100"></span>References and Links
+References and Links
+====================
 
 Ferguson, Scott. "PPU Tutorial." N.p., n.d. Web. &lt;[*https://opcode-defined.quora.com*](https://opcode-defined.quora.com)&gt;.
 
- "6502 Specification." NesDev. N.p., n.d. Web. 10 May 2017. &lt;[*http://nesdev.com/6502.txt*](http://nesdev.com/6502.txt)&gt;.
+> "6502 Specification." NesDev. N.p., n.d. Web. 10 May 2017. &lt;[*http://nesdev.com/6502.txt*](http://nesdev.com/6502.txt)&gt;.
+>
+> Dormann, Klaus. "6502 Functional Test Suite." *GitHub*. N.p., n.d. Web. 10 May 2017. &lt;[*https://github.com/Klaus2m5/*](https://github.com/Klaus2m5/)&gt;.
+>
+> "NES Reference Guide." Nesdev. N.p., n.d. Web. 10 May 2017. &lt;[*http://wiki.nesdev.com/w/index.php/NES\_reference\_guide*](http://wiki.nesdev.com/w/index.php/NES_reference_guide)&gt;.
+>
+> Java Simple Serial Connector library: &lt;[*https://github.com/scream3r/java-simple-serial-connector*](https://github.com/scream3r/java-simple-serial-connector)&gt;
+>
+> Final Github release: &lt;[*https://github.com/jtgebert/fpganes\_release*](https://github.com/jtgebert/fpganes_release)&gt;
 
-Dormann, Klaus. "6502 Functional Test Suite." *GitHub*. N.p., n.d. Web. 10 May 2017.&lt;[*https://github.com/Klaus2m5/*](https://github.com/Klaus2m5/)&gt;.
+Contributions
+=============
 
-"NES Reference Guide." Nesdev. N.p., n.d. Web. 10 May 2017. &lt;[*http://wiki.nesdev.com/w/index.php/NES\_reference\_guide*](http://wiki.nesdev.com/w/index.php/NES_reference_guide)&gt;.
-
-Java Simple Serial Connector library: &lt;[*https://github.com/scream3r/java-simple-serial-connector*](https://github.com/scream3r/java-simple-serial-connector)&gt;
-
-Final Github release: &lt;[*https://github.com/jtgebert/fpganes\_release*](https://github.com/jtgebert/fpganes_release)&gt;
-
-<span id="anchor-101"></span>
-
-1.  <span id="anchor-102"></span>Contributions
-
-<span id="anchor-103"></span>Eric Sullivan
+Eric Sullivan
+-------------
 
 Designed and debugged the NES picture processing unit, created a comprehensive set of PPU testbenches to verify functionality, Integrated the VGA to the PPU, implemented the DMA and dummy APU, started a CPU simulator in python, Helped debug the integrated system.
 
-<span id="anchor-104"></span>Patrick Yang
+Patrick Yang
+------------
 
 Specified the CPU microarchitecture along with Pavan, designed the ALU, registers, and memory interface unit, wrote a self checking testbench, responsible for CPU debug, integrated all modules on top level file, and debugged of the integrated system. Helped Jon to modify controller driver to also be an onboard CPU trace module.
 
-<span id="anchor-105"></span>Pavan Holla
+Pavan Holla
+-----------
 
 Specified the CPU microarchitecture along with Patrick, designed the decoder and interrupt handler, and wrote the script that generates the processor control module. Modified a testsuite and provided the infrastructure for CPU verification. Wrote tic tac toe in assembly as a fail-safe game. Also, worked on a parallel effort to integrate undocumented third party NES IP.
 
-<span id="anchor-106"></span>Jonathan Ebert
+Jonathan Ebert
+--------------
 
 Modified the VGA to interface with the PPU. Wrote a new driver to control our existing SPART module to act as a NES controller and as an onboard CPU trace module. Wrote Java program to communicate with the SPART module using the JSSC library. Wrote memory wrappers, hardware decoder, and generated all game ROMs. Helped debug the integrated system. Wrote a very simple assembler. Wrote script to convert NES ROMs to MIF files. Also, worked on a parallel effort to integrate undocumented third party NES IP.
